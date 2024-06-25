@@ -7,10 +7,15 @@ import serial.tools.list_ports
 def initialize_config():
     config = configparser.ConfigParser()
     config.read('config.ini')
+
     interface_type = config['interface']['type']
     hostname = config['interface'].get('hostname', None)
-    port = config['interface'].get('port', None)
-    bbs_nodes = config['sync']['bbs_nodes'].split(',')
+    port = config['interface'].get('port', None) 
+
+    bbs_nodes = config.get('sync', 'bbs_nodes', fallback='').split(',')
+    if bbs_nodes == ['']:
+        bbs_nodes = []
+
     return config, interface_type, hostname, port, bbs_nodes
 
 def get_interface(interface_type, hostname=None, port=None):
