@@ -99,7 +99,8 @@ Be sure you've followed the Python virtual environment steps above and activated
 
 ## Thanks
 
-Big thanks to [Meshtastic]([Meshtastic (github.com)](https://github.com/meshtastic)) and [pdxlocations](https://github.com/pdxlocations) for the great Python examples:
+Big thanks to [Meshtastic](https://github.com/meshtastic) and [pdxlocations](https://github.com/pdxlocations) for the great Python examples:
+
 [python/examples at master · meshtastic/python (github.com)](https://github.com/meshtastic/python/tree/master/examples)
 
 [pdxlocations/Meshtastic-Python-Examples (github.com)](https://github.com/pdxlocations/Meshtastic-Python-Examples)
