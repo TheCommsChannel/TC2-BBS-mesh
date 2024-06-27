@@ -1,0 +1,7 @@
+services:
+  tc2-bbs-mesh:
+    build: .
+    restart: always
+    volumes:
+      - ./config:/config
+    container_name: tc2-bbs-mesh
