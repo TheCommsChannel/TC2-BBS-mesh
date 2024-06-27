@@ -1,4 +1,5 @@
 import logging
+import os
 import sqlite3
 import threading
 import uuid
@@ -16,7 +17,7 @@ thread_local = threading.local()
 
 def get_db_connection():
     if not hasattr(thread_local, 'connection'):
-        thread_local.connection = sqlite3.connect('bulletins.db')
+        thread_local.connection = sqlite3.connect(os.getenv('DB_FILE', 'data/bulletins.db'))
     return thread_local.connection
 
 def initialize_database():

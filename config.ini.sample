@@ -17,7 +17,7 @@
 
 [interface]
 type = serial
-# port = /dev/ttyUSB0
+# port = /dev/ttyACM0
 # hostname = 192.168.x.x
 
 

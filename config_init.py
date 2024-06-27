@@ -2,11 +2,12 @@ import configparser
 import time
 import meshtastic.serial_interface
 import meshtastic.tcp_interface
+import os
 import serial.tools.list_ports
 
 def initialize_config():
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(os.getenv('CONFIG_FILE', 'config/config.ini'))
 
     interface_type = config['interface']['type']
     hostname = config['interface'].get('hostname', None)
