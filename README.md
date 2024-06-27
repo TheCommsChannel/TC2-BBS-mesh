@@ -6,6 +6,11 @@ This is the TC²-BBS system integrated with Meshtastic devices. The system allow
 
 ## Setup
 
+### Docker installation
+TC²-BBS Meshtastic is available on Docker Hub
+
+[![Docker HUB](https://icon-icons.com/downloadimage.php?id=151885&root=2530/PNG/128/&file=docker_button_icon_151885.png)](https://hub.docker.com/r/thealhu/tc2-bbs-mesh)
+
 ### Requirements
 
 - Python 3.x
