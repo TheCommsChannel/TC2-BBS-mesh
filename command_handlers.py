@@ -1,4 +1,5 @@
 import logging
+import os
 import random
 import time
 
@@ -89,7 +90,7 @@ def handle_stats_command(sender_id, interface):
 
 def handle_fortune_command(sender_id, interface):
     try:
-        with open('fortunes.txt', 'r') as file:
+        with open(os.getenv('FORTUNE_FILE','data/fortunes.txt'), 'r') as file:
             fortunes = file.readlines()
         if not fortunes:
             send_message("No fortunes available.", sender_id, interface)
