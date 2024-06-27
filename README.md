@@ -99,6 +99,16 @@ Be sure you've followed the Python virtual environment steps above and activated
 - **Wall of Shame**: View devices with low battery levels.
 - **Fortune Teller**: Get a random fortune. Pulls from the fortunes.txt file. Feel free to edit this file remove or add more if you like.
 
+## Usage
+
+You interact with the BBS by sending direct messages to the node that's connected to the system running the Python script. Sending any message to it will get a response with the main menu.
+Make selections by sending messages based on the letter or number in brackets - Send M for [M]ail Menu for example.
+
+A video of it in use is available on our YouTube channel:
+
+[![TC²-BBS-Mesh](https://img.youtube.com/vi/d6LhY4HoimU/0.jpg)](https://www.youtube.com/watch?v=d6LhY4HoimU)
+
+
 ## Thanks
 
 Big thanks to [Meshtastic](https://github.com/meshtastic) and [pdxlocations](https://github.com/pdxlocations) for the great Python examples:
