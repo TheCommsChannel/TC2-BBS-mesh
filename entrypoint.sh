@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_DIR=/app/config
+CONFIG_DIR=config
 CONFIG_FILE=$CONFIG_DIR/config.ini
 SAMPLE_FILE=config.ini.sample
 

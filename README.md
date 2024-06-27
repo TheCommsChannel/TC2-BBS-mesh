@@ -97,7 +97,7 @@ The docker entrypoint.sh will automatically copy config.ini.sample to config.ini
 if you want to edit config, make sure you add the config directory as a docker volume.
 
 ```sh
-docker run -it --name tc2bbsmesh -v tc2bbsmesh-config:/config/ -v tc2bbsmesh-data:/data/  --device=/dev/ttyACM0 tc2-bbs-mesh
+docker run -it --name tc2bbsmesh -v tc2bbsmesh-config:/app/config/ -v tc2bbsmesh-data:/app/data/  --device=/dev/ttyACM0 tc2-bbs-mesh
 ```
 
 Tested on Orange Pi 3 LTS (Armbian), but should work on all linux distros.
