@@ -113,7 +113,8 @@ If you would like to have the script automatically run at boot, follow the steps
    
    We just need to replace the 4 parts that have "pi" in those 3 lines with your username.
 
-2. **Configuring systemd** 
+2. **Configuring systemd**
+   
    From the TC2-BBS-mesh directory, run the following commands:
    
    ```sh
