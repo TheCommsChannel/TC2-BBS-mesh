@@ -40,11 +40,11 @@ After that, the TC²-BBS Meshtastic can simply be started as a service in the ba
 
     docker compose up -d     
     
-	    #for debugging use:
-	    docker compose up
-			
-		#for stopping use:
-		docker compose down
+        #for debugging use:
+        docker compose up
+    	
+        #for stopping use:
+        docker compose down
 
 
   
