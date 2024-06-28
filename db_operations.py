@@ -66,7 +66,7 @@ def get_channels():
 def add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interface, unique_id=None):
     conn = get_db_connection()
     c = conn.cursor()
-    date = datetime.now().strftime('%m/%d/%Y %H:%M')
+    date = datetime.now().strftime('%Y-%m-%d %H:%M')
     if not unique_id:
         unique_id = str(uuid.uuid4())
     c.execute(
@@ -107,7 +107,7 @@ def delete_bulletin(bulletin_id, bbs_nodes, interface):
 def add_mail(sender_id, sender_short_name, recipient_id, subject, content, bbs_nodes, interface, unique_id=None):
     conn = get_db_connection()
     c = conn.cursor()
-    date = datetime.now().strftime('%m/%d/%Y %H:%M')
+    date = datetime.now().strftime('%Y-%m-%d %H:%M')
     if not unique_id:
         unique_id = str(uuid.uuid4())
     c.execute("INSERT INTO mail (sender, sender_short_name, recipient, date, subject, content, unique_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
