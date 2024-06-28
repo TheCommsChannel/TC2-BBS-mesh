@@ -48,7 +48,7 @@ def main():
     
     merge_config(system_config, args)
     
-    print(f"{system_config=}")
+    # print(f"{system_config=}")
     
     interface = get_interface(system_config)
     interface.bbs_nodes = system_config['bbs_nodes']
