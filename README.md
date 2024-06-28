@@ -4,13 +4,13 @@
 
 This is the TC²-BBS system integrated with Meshtastic devices. The system allows for message handling, bulletin boards, mail systems, and a channel directory.
 
-## Setup
-
-### Docker installation
+### Docker
 
 If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
 
 [![Docker HUB](https://icon-icons.com/downloadimage.php?id=151885&root=2530/PNG/128/&file=docker_button_icon_151885.png)](https://hub.docker.com/r/thealhu/tc2-bbs-mesh)
+
+## Setup
 
 ### Requirements
 
