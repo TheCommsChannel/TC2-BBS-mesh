@@ -18,6 +18,7 @@ from config_init import initialize_config, get_interface
 from db_operations import initialize_database
 from message_processing import on_receive
 from pubsub import pub
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -51,7 +52,8 @@ def main():
 
     try:
         while True:
-            pass
+            time.sleep(1)
+
     except KeyboardInterrupt:
         logging.info("Shutting down the server...")
         interface.close()
