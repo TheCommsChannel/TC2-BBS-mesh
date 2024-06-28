@@ -1,6 +1,6 @@
 # TC²-BBS Meshtastic Version
 
-[](https://ko-fi.com/B0B1OZ22Z)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B1OZ22Z)
 
 This is the TC²-BBS system integrated with Meshtastic devices. The system allows for message handling, bulletin boards, mail systems, and a channel directory.
 
@@ -10,7 +10,7 @@ This is the TC²-BBS system integrated with Meshtastic devices. The system allow
 
 If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
 
-[](https://hub.docker.com/r/thealhu/tc2-bbs-mesh)
+[![Docker HUB](https://icon-icons.com/downloadimage.php?id=151885&root=2530/PNG/128/&file=docker_button_icon_151885.png)](https://hub.docker.com/r/thealhu/tc2-bbs-mesh)
 
 ### Requirements
 
@@ -148,7 +148,7 @@ Make selections by sending messages based on the letter or number in brackets - 
 
 A video of it in use is available on our YouTube channel:
 
-[](https://www.youtube.com/watch?v=d6LhY4HoimU)
+[![TC²-BBS-Mesh](https://img.youtube.com/vi/d6LhY4HoimU/0.jpg)](https://www.youtube.com/watch?v=d6LhY4HoimU)
 
 ## Thanks
 
