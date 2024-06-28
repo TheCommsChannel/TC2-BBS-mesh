@@ -1,0 +1,14 @@
+[Unit]
+Description=TC²-BBS Meshtastic Version
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=20
+User=pi
+WorkingDirectory=/home/pi/TC2-BBS-mesh
+ExecStart=/home/pi/TC2-BBS-mesh/venv/bin/python3 /home/pi/TC2-BBS-mesh/server.py
+
+[Install]
+WantedBy=multi-user.target
