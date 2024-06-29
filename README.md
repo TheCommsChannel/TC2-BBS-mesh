@@ -90,7 +90,7 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
 Run the server with:
 
 ```sh
-python server.py```  
+python server.py  
 ```
 
 Be sure you've followed the Python virtual environment steps above and activated it before running.
