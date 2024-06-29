@@ -176,6 +176,9 @@ If you would like to have the script automatically run at boot, follow the steps
    ```sh
    sudo systemctl restart mesh-bbs.service
    ```
+## Radio Configuration
+
+Note: Radio device role must be set to **CLIENT**, other roles may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests
 
 ## Features
 
