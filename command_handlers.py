@@ -15,8 +15,6 @@ from utils import (
     update_user_state
 )
 
-config, interface_type, hostname, port, bbs_nodes = initialize_config()
-
 
 def get_node_name(node_id, interface):
     node_info = interface.nodes.get(node_id)

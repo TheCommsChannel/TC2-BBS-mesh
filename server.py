@@ -14,7 +14,7 @@ other BBS servers listed in the config.ini file.
 
 import logging
 
-from config_init import initialize_config, get_interface
+from config_init import initialize_config, get_interface, init_cli_parser, merge_config
 from db_operations import initialize_database
 from message_processing import on_receive
 from pubsub import pub
@@ -35,20 +35,32 @@ Meshtastic Version
 """
     print(banner)
 
+
+
 def main():
     display_banner()
-    config, interface_type, hostname, port, bbs_nodes = initialize_config()
-    interface = get_interface(interface_type, hostname, port)
-    interface.bbs_nodes = bbs_nodes
+    # config, interface_type, hostname, port, bbs_nodes = initialize_config()
+    args = init_cli_parser()
+    config_file = None
+    if args.config is not None:
+        config_file = args.config
+    system_config = initialize_config(config_file)
+    
+    merge_config(system_config, args)
+    
+    # print(f"{system_config=}")
+    
+    interface = get_interface(system_config)
+    interface.bbs_nodes = system_config['bbs_nodes']
 
-    logging.info(f"TC²-BBS is running on {interface_type} interface...")
+    logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
 
     initialize_database()
 
     def receive_packet(packet):
         on_receive(packet, interface)
 
-    pub.subscribe(receive_packet, 'meshtastic.receive')
+    pub.subscribe(receive_packet, system_config['mqtt_topic'])
 
     try:
         while True:

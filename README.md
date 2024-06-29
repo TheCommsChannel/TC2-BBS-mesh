@@ -90,10 +90,40 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
 Run the server with:
 
 ```sh
-python server.py  
+python server.py
 ```
 
 Be sure you've followed the Python virtual environment steps above and activated it before running.
+
+## Command line arguments
+```
+$ python server.py --help
+
+████████╗ ██████╗██████╗       ██████╗ ██████╗ ███████╗
+╚══██╔══╝██╔════╝╚════██╗      ██╔══██╗██╔══██╗██╔════╝
+   ██║   ██║      █████╔╝█████╗██████╔╝██████╔╝███████╗
+   ██║   ██║     ██╔═══╝ ╚════╝██╔══██╗██╔══██╗╚════██║
+   ██║   ╚██████╗███████╗      ██████╔╝██████╔╝███████║
+   ╚═╝    ╚═════╝╚══════╝      ╚═════╝ ╚═════╝ ╚══════╝
+Meshtastic Version
+
+usage: server.py [-h] [--config CONFIG] [--interface-type {serial,tcp}] [--port PORT] [--host HOST] [--mqtt-topic MQTT_TOPIC]
+
+Meshtastic BBS system
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        System configuration file
+  --interface-type {serial,tcp}, -i {serial,tcp}
+                        Node interface type
+  --port PORT, -p PORT  Serial port
+  --host HOST           TCP host address
+  --mqtt-topic MQTT_TOPIC, -t MQTT_TOPIC
+                        MQTT topic to subscribe
+```
+
+
 
 ## Automatically run at boot
 
