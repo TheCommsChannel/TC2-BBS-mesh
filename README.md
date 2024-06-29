@@ -176,6 +176,9 @@ If you would like to have the script automatically run at boot, follow the steps
    ```sh
    sudo systemctl restart mesh-bbs.service
    ```
+## Radio Configuration
+
+Note: Radio must be set to **Client** mode, other modes the radio may allow the BBS to communicate for a short time then stops responding
 
 ## Features
 
