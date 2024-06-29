@@ -148,7 +148,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
 
 
 def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
-    boards = {0: "General", 1: "News", 2: "Info", 3: "Urgent"}
+    boards = {0: "General", 1: "Info", 2: "News", 3: "Urgent"}
 
     if step == 1:
         if message == '4':
