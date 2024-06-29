@@ -159,7 +159,7 @@ If you would like to have the script automatically run at boot, follow the steps
    sudo systemctl start mesh-bbs.service
    ```
    
-   The service should be started now and should start anytime your device is powered on or rebooted. You can check the status ofk the service by running the following command:
+   The service should be started now and should start anytime your device is powered on or rebooted. You can check the status of the service by running the following command:
    
    ```sh
    sudo systemctl status mesh-bbs.service
