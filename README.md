@@ -178,7 +178,7 @@ If you would like to have the script automatically run at boot, follow the steps
    ```
 ## Radio Configuration
 
-Note: Radio must be set to **Client** mode, other modes the radio may allow the BBS to communicate for a short time then stops responding
+Note: Radio device role must be set to **CLIENT**, other roles may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests
 
 ## Features
 
