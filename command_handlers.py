@@ -258,10 +258,19 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
 
     elif step == 2:
         mail_id = int(message)
-        sender, date, subject, content, unique_id = get_mail_content(mail_id)
-        send_message(f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n{content}", sender_id, interface)
-        send_message("Would you like to delete this message now that you've viewed it? Y/N", sender_id, interface)
-        update_user_state(sender_id, {'command': 'MAIL', 'step': 4, 'mail_id': mail_id, 'unique_id': unique_id})
+        try:
+            
+            # ERROR: sender_id is not what is stored in the DB
+            sender_node_id = get_node_id_from_num(sender_id, interface)
+            sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
+            send_message(f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n{content}", sender_id, interface)
+            send_message("Would you like to delete this message now that you've viewed it? Y/N", sender_id, interface)
+            update_user_state(sender_id, {'command': 'MAIL', 'step': 4, 'mail_id': mail_id, 'unique_id': unique_id})
+        except TypeError:
+            # get_main_content returned None. Node tried to access somebody's else mail message
+            logging.info(f"Node {sender_id} tried to access non-existent message")
+            send_message(f"Mail not found", sender_id, interface)
+            update_user_state(sender_id, None)
 
     elif step == 3:
         short_name = message
@@ -283,7 +292,8 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
     elif step == 4:
         if message.lower() == "y":
             unique_id = state['unique_id']
-            delete_mail(unique_id, bbs_nodes, interface)
+            sender_node_id = get_node_id_from_num(sender_id, interface)
+            delete_mail(unique_id, sender_node_id, bbs_nodes, interface)
             send_message("The message has been deleted 🗑️", sender_id, interface)
         else:
             send_message("The message has been kept in your inbox.✉️\nJust don't let it get as messy as your regular email inbox (ಠ_ಠ)", sender_id, interface)
