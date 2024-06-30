@@ -178,7 +178,11 @@ If you would like to have the script automatically run at boot, follow the steps
    ```
 ## Radio Configuration
 
-Note: Radio device role must be set to **CLIENT**, other roles may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests
+Note: There have been reports of issues with some device roles that may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests. 
+
+The following device roles that have been tested and working: 
+- **Client**
+- **Router_Client**
 
 ## Features
 
