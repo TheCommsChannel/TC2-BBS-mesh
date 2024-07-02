@@ -116,7 +116,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
         if choice == 1:
             response = "COMING SOON!!"
             send_message(response, sender_id, interface)
-            handle_help_command(sender_id, interface)
+            handle_stats_command(sender_id, interface)
             return
 
     elif step == 2:
