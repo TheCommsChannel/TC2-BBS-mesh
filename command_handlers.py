@@ -49,7 +49,7 @@ def handle_help_command(sender_id, interface, state=None):
         "[F]ortune",
         #"[W]all of Shame",
         #"[C]hannel Directory",
-        "EXIT: Exit current menu",
+        #"EXIT: Exit current menu",
         "[H]elp"
     ]
     if state and 'command' in state:
