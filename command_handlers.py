@@ -103,8 +103,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
         if choice == 1:
             psutil.cpu_percent()
-            psutil.cpu_count()
-            time.sleep(0.2)
+            time.sleep(1)
             cpu = str(psutil.cpu_percent()/psutil.cpu_count())
             ramu = str(psutil.virtual_memory().percent)
             response = "CPU: " + cpu + "% Used\nRAM: " + ramu + "% Used"
