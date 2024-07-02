@@ -115,7 +115,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
         if choice == 1:
-            response = "COMING SOON!!"
+            response = "CPU: " + psutil.cpu_percent()
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
             return
