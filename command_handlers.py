@@ -74,10 +74,6 @@ def handle_help_command(sender_id, interface, state=None):
                 "[0]Mesh Stats",
                 "[1]Server Stats",
                 "[2]Exit Stats Menu"
-#                "[0]Total Nodes",
-#                "[1]Total HW Models",
-#                "[2]Total Roles",
-#                "[3]Back"
             ]
     response = title + "Available commands:\n" + "\n".join(commands)
     send_message(response, sender_id, interface)
@@ -85,7 +81,6 @@ def handle_help_command(sender_id, interface, state=None):
 
 def handle_stats_command(sender_id, interface):
     response = "What stats would you like to view?\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit Stats Menu"
-#    response = "What stats would you like to view?\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'STATS', 'step': 1})
 
@@ -167,54 +162,6 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             timeframes = ["24 hours", "8 hours", "hour"]
             send_message(f"Total nodes seen in the last {timeframes[choice - 1]}: {total_nodes}", sender_id, interface)
         handle_stats_steps(sender_id, '0', 1, interface, bbs_nodes)
-
-
-#def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
-#    if step == 1:
-#        choice = message.upper()
-#        if choice == '3':
-#            handle_help_command(sender_id, interface)
-#            return
-#        choice = int(choice)
-#        if choice == 0:
-#            response = "Select time period for total nodes:\n\n[0]ALL\n[1]Last 24 Hours\n[2]Last 8 Hours\n[3]Last Hour"
-#            send_message(response, sender_id, interface)
-#            update_user_state(sender_id, {'command': 'STATS', 'step': 2})
-#        elif choice == 1:
-#            hw_models = {}
-#            for node in interface.nodes.values():
-#                hw_model = node['user'].get('hwModel', 'Unknown')
-#                hw_models[hw_model] = hw_models.get(hw_model, 0) + 1
-#            response = "Hardware Models:\n" + "\n".join([f"{model}: {count}" for model, count in hw_models.items()])
-#            send_message(response, sender_id, interface)
-#            handle_stats_command(sender_id, interface)
-#        elif choice == 2:
-#            roles = {}
-#            for node in interface.nodes.values():
-#                role = node['user'].get('role', 'Unknown')
-#                roles[role] = roles.get(role, 0) + 1
-#            response = "Roles:\n" + "\n".join([f"{role}: {count}" for role, count in roles.items()])
-#            send_message(response, sender_id, interface)
-#            handle_stats_command(sender_id, interface)
-
-#    elif step == 2:
-#        choice = int(message)
-#        current_time = int(time.time())
-#        if choice == 0:
-#            total_nodes = len(interface.nodes)
-#            send_message(f"Total nodes seen: {total_nodes}", sender_id, interface)
-#        else:
-#            time_limits = [86400, 28800, 3600]  # Last 24 hours, Last 8 hours, Last hour
-#            time_limit = current_time - time_limits[choice - 1]
-#            total_nodes = 0
-#            for node in interface.nodes.values():
-#                last_heard = node.get('lastHeard', 0)
-#                if last_heard is not None and last_heard >= time_limit:
-#                    total_nodes += 1
-#                    logging.info(f"Node {node.get('user', {}).get('longName', 'Unknown')} heard at {last_heard}, within limit {time_limit}")
-#            timeframes = ["24 hours", "8 hours", "hour"]
-#            send_message(f"Total nodes seen in the last {timeframes[choice - 1]}: {total_nodes}", sender_id, interface)
-#        handle_stats_steps(sender_id, '0', 1, interface, bbs_nodes)
 
 
 def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
