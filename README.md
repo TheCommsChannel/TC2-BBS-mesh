@@ -1,3 +1,5 @@
+This is a modified version as used on the Yorkshire BBS Network.
+
 # TC²-BBS Meshtastic Version
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B1OZ22Z)
