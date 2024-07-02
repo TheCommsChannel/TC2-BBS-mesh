@@ -114,8 +114,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             time.sleep(0.1)
             cpu = str(psutil.cpu_percent()/psutil.cpu_count())
             ramu = str(psutil.virtual_memory().percent)
-            ramt = str(psutil.virtual_memory().total)
-            response = "CPU: " + cpu + "%\nRAM: " + ramu + "% Used of " + ramt
+            response = "CPU: " + cpu + "%\nRAM: " + ramu
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
             return
