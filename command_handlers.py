@@ -105,13 +105,12 @@ def handle_fortune_command(sender_id, interface):
 
 def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
     if step == 1: 
-        choice = int(choice)
+        choice = int(message)
         if choice == 2:
             handle_help_command(sender_id, interface)
             return
 
     elif step == 2:
-        choice = int(choice)
         if choice == 3:
             handle_help_command(sender_id, interface)
             return
