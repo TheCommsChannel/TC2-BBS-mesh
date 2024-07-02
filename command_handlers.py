@@ -69,7 +69,7 @@ def handle_help_command(sender_id, interface, state=None):
                 "[1]Server Stats",
                 "[2]Exit Stats Menu"
             ]
-    response = title + "Available commands:\n" + "\n".join(commands)
+    response = title + "\n".join(commands)
     send_message(response, sender_id, interface)
 
 def handle_stats_command(sender_id, interface):
