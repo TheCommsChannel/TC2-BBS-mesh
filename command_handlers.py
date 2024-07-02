@@ -1,6 +1,7 @@
 import logging
 import random
 import time
+import psutil
 
 from config_init import initialize_config
 from db_operations import (
@@ -47,9 +48,9 @@ def handle_help_command(sender_id, interface, state=None):
         "[B]ulletin Menu",
         "[S]tats Menu",
         "[F]ortune",
-        "[W]all of Shame",
-        "[C]hannel Directory",
-        "EXIT: Exit current menu",
+        #"[W]all of Shame",
+        #"[C]hannel Directory",
+        #"EXIT: Exit current menu",
         "[H]elp"
     ]
     if state and 'command' in state:
@@ -70,17 +71,16 @@ def handle_help_command(sender_id, interface, state=None):
             ]
         elif current_command == 'STATS':
             commands = [
-                "[0]Total Nodes",
-                "[1]Total HW Models",
-                "[2]Total Roles",
-                "[3]Back"
+                "[0]Mesh Stats",
+                "[1]Server Stats",
+                "[2]Exit Stats Menu"
             ]
     response = title + "Available commands:\n" + "\n".join(commands)
     send_message(response, sender_id, interface)
 
 
 def handle_stats_command(sender_id, interface):
-    response = "What stats would you like to view?\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
+    response = "What stats would you like to view?\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit Stats Menu"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'STATS', 'step': 1})
 
@@ -100,12 +100,29 @@ def handle_fortune_command(sender_id, interface):
 
 
 def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
-    if step == 1:
-        choice = message.upper()
-        if choice == '3':
+    if step == 1: 
+        choice = int(message)
+        if choice == 2:
             handle_help_command(sender_id, interface)
             return
-        choice = int(choice)
+        if choice == 0:
+            response = "What stats would you like to view?\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
+            send_message(response, sender_id, interface)
+            update_user_state(sender_id, {'command': 'STATS', 'step': 2})
+        if choice == 1:
+            psutil.cpu_percent()
+            time.sleep(0.1)
+            cpu = str(psutil.cpu_percent()/psutil.cpu_count())
+            response = "CPU: " + cpu + "%"
+            send_message(response, sender_id, interface)
+            handle_stats_command(sender_id, interface)
+            return
+
+    elif step == 2:
+        choice = int(message)
+        if choice == 3:
+            handle_help_command(sender_id, interface)
+            return
         if choice == 0:
             response = "Select time period for total nodes:\n\n[0]ALL\n[1]Last 24 Hours\n[2]Last 8 Hours\n[3]Last Hour"
             send_message(response, sender_id, interface)
@@ -127,7 +144,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
 
-    elif step == 2:
+    elif step == 3:
         choice = int(message)
         current_time = int(time.time())
         if choice == 0:
