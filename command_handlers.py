@@ -103,9 +103,11 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
         if choice == 1:
             cpu = str(psutil.cpu_freq().current)
-            la = str(psutil.getloadavg())
+            la1 = str(psutil.getloadavg()[0])
+            la2 = str(psutil.getloadavg()[1])
+            la3 = str(psutil.getloadavg()[2])
             ramu = str(psutil.virtual_memory().percent)
-            response = "CPU: " + cpu + "Mhz\nLoad " + la + "\nRAM: " + ramu + "% Used"
+            response = "CPU: " + cpu + "Mhz\nLoad " + la1 la2 la3 + "\nRAM: " + ramu + "% Used"
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
             return
