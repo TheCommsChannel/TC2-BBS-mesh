@@ -3,7 +3,6 @@ import random
 import time
 import psutil
 
-#from config_init import initialize_config
 from db_operations import (
     add_bulletin, add_mail, delete_mail,
     get_bulletin_content, get_bulletins,
@@ -16,30 +15,25 @@ from utils import (
     update_user_state
 )
 
-
 def get_node_name(node_id, interface):
     node_info = interface.nodes.get(node_id)
     if node_info:
         return node_info['user']['longName']
     return f"Node {node_id}"
 
-
 def handle_mail_command(sender_id, interface):
     response = "✉️ MAIL MENU ✉️\n\nWhat would you like to do with mail?\n\n[0]Read\n[1]Send\n[2]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'MAIL', 'step': 1})
-
 
 def handle_bulletin_command(sender_id, interface):
     response = "📰 BULLETIN MENU 📰\n\nWhich board would you like to enter?\n\n[0]General\n[1]Info\n[2]News\n[3]Urgent\n[4]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'BULLETIN', 'step': 1})
 
-
 def handle_exit_command(sender_id, interface):
     send_message("Type 'HELP' for a list of commands.", sender_id, interface)
     update_user_state(sender_id, None)
-
 
 def handle_help_command(sender_id, interface, state=None):
     title = "█▓▒░ Yorkshire BBS ░▒▓█\n\n"
@@ -78,12 +72,10 @@ def handle_help_command(sender_id, interface, state=None):
     response = title + "Available commands:\n" + "\n".join(commands)
     send_message(response, sender_id, interface)
 
-
 def handle_stats_command(sender_id, interface):
     response = "What stats would you like to view?\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit Stats Menu"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'STATS', 'step': 1})
-
 
 def handle_fortune_command(sender_id, interface):
     try:
@@ -97,7 +89,6 @@ def handle_fortune_command(sender_id, interface):
         send_message(decorated_fortune, sender_id, interface)
     except Exception as e:
         send_message(f"Error generating fortune: {e}", sender_id, interface)
-
 
 def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
     if step == 1: 
@@ -163,7 +154,6 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             timeframes = ["24 hours", "8 hours", "hour"]
             send_message(f"Total nodes seen in the last {timeframes[choice - 1]}: {total_nodes}", sender_id, interface)
         handle_stats_steps(sender_id, '0', 1, interface, bbs_nodes)
-
 
 def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
     boards = {0: "General", 1: "Info", 2: "News", 3: "Urgent"}
@@ -253,7 +243,6 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             state['content'] += message + "\n"
             update_user_state(sender_id, state)
 
-
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
     if step == 1:
         choice = message
@@ -276,8 +265,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
 
     elif step == 2:
         mail_id = int(message)
-        try:
-            
+        try:          
             # ERROR: sender_id is not what is stored in the DB
             sender_node_id = get_node_id_from_num(sender_id, interface)
             sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
@@ -357,7 +345,6 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             send_message("Okay, feel free to send another command.", sender_id, interface)
             update_user_state(sender_id, None)
 
-
 def handle_wall_of_shame_command(sender_id, interface):
     response = "Devices with battery levels below 20%:\n"
     for node_id, node in interface.nodes.items():
@@ -370,12 +357,10 @@ def handle_wall_of_shame_command(sender_id, interface):
         response = "No devices with battery levels below 20% found."
     send_message(response, sender_id, interface)
 
-
 def handle_channel_directory_command(sender_id, interface):
     response = "📚 CHANNEL DIRECTORY 📚\n\nWhat would you like to do in the Channel Directory?\n\n[0]View\n[1]Post\n[2]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 1})
-
 
 def handle_channel_directory_steps(sender_id, message, step, state, interface):
     if step == 1:
