@@ -234,7 +234,6 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
                 update_user_state(sender_id, None)
                 return
             sender_short_name = node_info['user'].get('shortName', f"Node {sender_id}")
-#            unique_id = add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interface)
             add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interface)
             send_message(f"Your bulletin '{subject}' has been posted to {board}.\n(╯°□°)╯📄📌[{board}]", sender_id, interface)
             response = f"What would you like to do in the {board} board?\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
