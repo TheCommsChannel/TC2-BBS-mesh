@@ -47,8 +47,8 @@ def handle_help_command(sender_id, interface, state=None):
         "[B]ulletin Menu",
         "[S]tats Menu",
         "[F]ortune",
-        "[W]all of Shame",
-        "[C]hannel Directory",
+        #"[W]all of Shame",
+        #"[C]hannel Directory",
         "EXIT: Exit current menu",
         "[H]elp"
     ]
