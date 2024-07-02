@@ -120,7 +120,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
         if choice == 0:
             response = "Select time period for total nodes:\n\n[0]ALL\n[1]Last 24 Hours\n[2]Last 8 Hours\n[3]Last Hour"
             send_message(response, sender_id, interface)
-            update_user_state(sender_id, {'command': 'STATS', 'step': 2})
+            update_user_state(sender_id, {'command': 'STATS', 'step': 3})
         elif choice == 1:
             hw_models = {}
             for node in interface.nodes.values():
