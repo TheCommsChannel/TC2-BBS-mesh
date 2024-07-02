@@ -275,7 +275,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
         except TypeError:
             # get_main_content returned None. Node tried to access somebody's else mail message
             logging.info(f"Node {sender_id} tried to access non-existent message")
-            send_message(f"Mail not found", sender_id, interface)
+            send_message("Mail not found", sender_id, interface)
             update_user_state(sender_id, None)
 
     elif step == 3:
