@@ -3,7 +3,7 @@ import random
 import time
 import psutil
 
-from config_init import initialize_config
+#from config_init import initialize_config
 from db_operations import (
     add_bulletin, add_mail, delete_mail,
     get_bulletin_content, get_bulletins,
