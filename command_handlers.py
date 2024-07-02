@@ -22,12 +22,12 @@ def get_node_name(node_id, interface):
     return f"Node {node_id}"
 
 def handle_mail_command(sender_id, interface):
-    response = "✉️ MAIL MENU ✉️\n\nWhat would you like to do with mail?\n\n[0]Read\n[1]Send\n[2]Exit"
+    response = "✉️ MAIL MENU ✉️\n\n[0]Read\n[1]Send\n[2]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'MAIL', 'step': 1})
 
 def handle_bulletin_command(sender_id, interface):
-    response = "📰 BULLETIN MENU 📰\n\nWhich board would you like to enter?\n\n[0]General\n[1]Info\n[2]News\n[3]Urgent\n[4]Exit"
+    response = "📰 BULLETIN MENU 📰\n\n[0]General\n[1]Info\n[2]News\n[3]Urgent\n[4]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'BULLETIN', 'step': 1})
 
@@ -73,7 +73,7 @@ def handle_help_command(sender_id, interface, state=None):
     send_message(response, sender_id, interface)
 
 def handle_stats_command(sender_id, interface):
-    response = "What stats would you like to view?\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit Stats Menu"
+    response = "📈 STATS MENU 📈\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit Stats Menu"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'STATS', 'step': 1})
 
@@ -98,7 +98,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             handle_help_command(sender_id, interface)
             return
         if choice == 0:
-            response = "What stats would you like to view?\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
+            response = "📈 MESH STATS 📈\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
         if choice == 1:
@@ -118,7 +118,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             handle_help_command(sender_id, interface)
             return
         if choice == 0:
-            response = "Select time period for total nodes:\n\n[0]ALL\n[1]Last 24 Hours\n[2]Last 8 Hours\n[3]Last Hour"
+            response = "📈 NODE NUMBERS 📈\n\n[0]ALL\n[1]Last 24 Hours\n[2]Last 8 Hours\n[3]Last Hour"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'STATS', 'step': 3})
         elif choice == 1:
@@ -166,7 +166,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             return
         board_name = boards.get(int(message))
         if board_name:
-            response = f"What would you like to do in the {board_name} board?\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+            response = f"📈 {board_name} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board_name})
         else:
@@ -176,7 +176,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
     elif step == 2:
         if message == '2':
             # Return to the bulletin menu
-            response = "📰 BULLETIN MENU 📰\n\nWhich board would you like to enter?\n\n[0]General\n[1]Info\n[2]News\n[3]Urgent\n[4]Exit"
+            response = "📰 BULLETIN MENU 📰\n\n[0]General\n[1]Info\n[2]News\n[3]Urgent\n[4]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN', 'step': 1})
             return
@@ -191,7 +191,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             else:
                 send_message(f"No bulletins in {board_name}.", sender_id, interface)
                 # Go back to the board menu
-                response = f"What would you like to do in the {board_name} board?\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+                response = f"📈 {board_name} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
                 send_message(response, sender_id, interface)
                 update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board_name})
 
@@ -204,7 +204,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
         sender_short_name, date, subject, content, unique_id = get_bulletin_content(bulletin_id)
         send_message(f"From: {sender_short_name}\nDate: {date}\nSubject: {subject}\n- - - - - - -\n{content}", sender_id, interface)
         board_name = state['board']
-        response = f"What would you like to do in the {board_name} board?\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+        response = f"📈 {board_name} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
         send_message(response, sender_id, interface)
         update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board_name})
 
@@ -238,7 +238,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             sender_short_name = node_info['user'].get('shortName', f"Node {sender_id}")
             add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interface)
             send_message(f"Your bulletin '{subject}' has been posted to {board}.\n(╯°□°)╯📄📌[{board}]", sender_id, interface)
-            response = f"What would you like to do in the {board} board?\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+            response = f"📈 {board} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board})
         else:
@@ -360,7 +360,7 @@ def handle_wall_of_shame_command(sender_id, interface):
     send_message(response, sender_id, interface)
 
 def handle_channel_directory_command(sender_id, interface):
-    response = "📚 CHANNEL DIRECTORY 📚\n\nWhat would you like to do in the Channel Directory?\n\n[0]View\n[1]Post\n[2]Exit"
+    response = "📚 CHANNEL DIRECTORY 📚\n\n[0]View\n[1]Post\n[2]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 1})
 
