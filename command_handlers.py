@@ -84,6 +84,7 @@ def handle_fortune_command(sender_id, interface):
         if not fortunes:
             send_message("No fortunes available.", sender_id, interface)
             return
+        # trunk-ignore(bandit/B311)
         fortune = random.choice(fortunes).strip()
         decorated_fortune = f"🔮 {fortune} 🔮"
         send_message(decorated_fortune, sender_id, interface)
