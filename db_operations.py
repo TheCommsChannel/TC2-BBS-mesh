@@ -4,6 +4,8 @@ import threading
 import uuid
 from datetime import datetime
 
+from meshtastic import BROADCAST_NUM
+
 from utils import (
     send_bulletin_to_bbs_nodes,
     send_delete_bulletin_to_bbs_nodes,
@@ -78,9 +80,8 @@ def add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interfac
 
     # New logic to send group chat notification for urgent bulletins
     if board.lower() == "urgent":
-        group_chat_id = 4294967295  # Default group chat ID (0xFFFFFFFF)
         notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}"
-        send_message(notification_message, group_chat_id, interface)
+        send_message(notification_message, BROADCAST_NUM, interface)
 
     return unique_id
 

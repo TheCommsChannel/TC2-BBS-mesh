@@ -1,7 +1,7 @@
 import logging
 import random
 import time
-import psutil
+import psutil # type: ignore
 
 from db_operations import (
     add_bulletin, add_mail, delete_mail,
@@ -103,6 +103,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
         if choice == 1:
             psutil.cpu_percent()
+            psutil.cpu_count()
             time.sleep(0.1)
             cpu = str(psutil.cpu_percent()/psutil.cpu_count())
             ramu = str(psutil.virtual_memory().percent)
