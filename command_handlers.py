@@ -1,6 +1,7 @@
 import logging
 import random
 import time
+import psutil
 
 from config_init import initialize_config
 from db_operations import (
