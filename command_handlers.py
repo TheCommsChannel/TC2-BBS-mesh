@@ -120,6 +120,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             return
 
     elif step == 2:
+        choice = int(message)
         if choice == 3:
             handle_help_command(sender_id, interface)
             return
