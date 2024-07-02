@@ -109,6 +109,15 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
         if choice == 2:
             handle_help_command(sender_id, interface)
             return
+        if choice == 0:
+            response = "What stats would you like to view?\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
+            send_message(response, sender_id, interface)
+            update_user_state(sender_id, {'command': 'STATS', 'step': 2})
+        if choice == 1:
+            response = "COMING SOON!!"
+            send_message(response, sender_id, interface)
+            handle_help_command(sender_id, interface)
+            return
 
     elif step == 2:
         if choice == 3:
