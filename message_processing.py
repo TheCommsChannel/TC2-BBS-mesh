@@ -1,5 +1,7 @@
 import logging
 
+from meshtastic import BROADCAST_NUM
+
 from command_handlers import (
     handle_mail_command, handle_bulletin_command, handle_exit_command,
     handle_help_command, handle_stats_command, handle_fortune_command,
@@ -33,9 +35,8 @@ def process_message(sender_id, message, interface, is_sync_message=False):
             add_bulletin(board, sender_short_name, subject, content, [], interface, unique_id=unique_id)
 
             if board.lower() == "urgent":
-                group_chat_id = 4294967295
                 notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}"
-                send_message(notification_message, group_chat_id, interface)
+                send_message(notification_message, BROADCAST_NUM, interface)
         elif message.startswith("MAIL|"):
             parts = message.split("|")
             sender_id, sender_short_name, recipient_id, subject, content, unique_id = parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]
