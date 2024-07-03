@@ -38,9 +38,9 @@ def handle_exit_command(sender_id, interface):
 def handle_help_command(sender_id, interface, state=None):
     title = "█▓▒░ Yorkshire BBS ░▒▓█\n\n"
     commands = []
-    if "mail" in interface.disabled is False:
+    if not "mail" in interface.disabled:
         commands.append("[M]ail")
-    if "bulletin" in interface.disabled in False:
+    if "bulletin" in interface.disabled is False:
         commands.append("[B]ulletin")
     if "stats" in interface.disabled is False:
         commands.append("[S]tats")
