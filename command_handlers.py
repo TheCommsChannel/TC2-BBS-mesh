@@ -40,15 +40,15 @@ def handle_help_command(sender_id, interface, state=None):
     commands = []
     if "mail" not in interface.disabled:
         commands.append("[M]ail")
-    if "bulletin" in interface.disabled is False:
+    if "bulletin" not in interface.disabled:
         commands.append("[B]ulletin")
-    if "stats" in interface.disabled is False:
+    if "stats" not in interface.disabled:
         commands.append("[S]tats")
-    if "fortune" in interface.disabled is False:
+    if "fortune" not in interface.disabled:
         commands.append("[F]ortune")
-    if "wos" in interface.disabled is False:
+    if "wos" not in interface.disabled:
         commands.append("[W]all of Shame")
-    if "channel" in interface.disabled is False:
+    if "channel" not in interface.disabled:
         commands.append("[C]hannel Directory")
     commands.append("[H]elp")
     
