@@ -171,7 +171,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             return
         board_name = boards.get(int(message))
         if board_name:
-            response = f"📈 {board_name} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+            response = f"📰 {board_name} MENU 📰\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board_name})
         else:
