@@ -196,7 +196,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             else:
                 send_message(f"No bulletins in {board_name}.", sender_id, interface)
                 # Go back to the board menu
-                response = f"📈 {board_name} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+                response = f"📰 {board_name} MENU 📰\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
                 send_message(response, sender_id, interface)
                 update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board_name})
 
@@ -209,7 +209,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
         sender_short_name, date, subject, content, unique_id = get_bulletin_content(bulletin_id)
         send_message(f"From: {sender_short_name}\nDate: {date}\nSubject: {subject}\n- - - - - - -\n{content}", sender_id, interface)
         board_name = state['board']
-        response = f"📈 {board_name} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+        response = f"📰 {board_name} MENU 📰\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
         send_message(response, sender_id, interface)
         update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board_name})
 
@@ -243,7 +243,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             sender_short_name = node_info['user'].get('shortName', f"Node {sender_id}")
             add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interface)
             send_message(f"Your bulletin '{subject}' has been posted to {board}.\n(╯°□°)╯📄📌[{board}]", sender_id, interface)
-            response = f"📈 {board} MENU 📈\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
+            response = f"📰 {board} MENU 📰\n\n[0]View Bulletins\n[1]Post Bulletin\n[2]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN', 'step': 2, 'board': board})
         else:
@@ -263,6 +263,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
                 update_user_state(sender_id, {'command': 'MAIL', 'step': 2})
             else:
                 send_message("There are no messages in your mailbox.\n(`⌒`)", sender_id, interface)
+                handle_help_command(sender_id, interface)
                 update_user_state(sender_id, None)
         elif choice == '1':
             send_message("What is the Short Name of the node you want to leave a message for?", sender_id, interface)
