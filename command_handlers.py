@@ -98,15 +98,14 @@ def handle_fortune_command(sender_id, interface):
 
 def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
     if step == 1: 
-        choice = int(message)
-        if choice == 2:
+        if message == '2':
             handle_help_command(sender_id, interface)
             return
-        if choice == 0:
+        if message == '0':
             response = "📈 MESH STATS 📈\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
-        if choice == 1:
+        if message == '1':
             cpu = str(psutil.cpu_freq().current)
             la1 = str(psutil.getloadavg()[0])
             la2 = str(psutil.getloadavg()[1])
@@ -118,15 +117,14 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             return
 
     elif step == 2:
-        choice = int(message)
-        if choice == 3:
+        if message == '3':
             handle_help_command(sender_id, interface)
             return
-        if choice == 0:
+        if message == '0':
             response = "📈 NODE NUMBERS 📈\n\n[0]ALL\n[1]Last 24 Hours\n[2]Last 8 Hours\n[3]Last Hour"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'STATS', 'step': 3})
-        elif choice == 1:
+        elif message == '1':
             hw_models = {}
             for node in interface.nodes.values():
                 hw_model = node['user'].get('hwModel', 'Unknown')
@@ -134,7 +132,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             response = "Hardware Models:\n" + "\n".join([f"{model}: {count}" for model, count in hw_models.items()])
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
-        elif choice == 2:
+        elif message == '2':
             roles = {}
             for node in interface.nodes.values():
                 role = node['user'].get('role', 'Unknown')
@@ -252,8 +250,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
 
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
     if step == 1:
-        choice = message
-        if choice == '0':
+        if message == '0':
             sender_node_id = get_node_id_from_num(sender_id, interface)
             mail = get_mail(sender_node_id)
             if mail:
@@ -265,10 +262,10 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
                 send_message("There are no messages in your mailbox.\n(`⌒`)", sender_id, interface)
                 handle_help_command(sender_id, interface)
                 update_user_state(sender_id, None)
-        elif choice == '1':
+        elif message == '1':
             send_message("What is the Short Name of the node you want to send mail to?", sender_id, interface)
             update_user_state(sender_id, {'command': 'MAIL', 'step': 3})
-        elif choice == '2':
+        elif message == '2':
             handle_help_command(sender_id, interface)
 
     elif step == 2:
