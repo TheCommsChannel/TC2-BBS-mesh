@@ -38,17 +38,17 @@ def handle_exit_command(sender_id, interface):
 def handle_help_command(sender_id, interface, state=None):
     title = "█▓▒░ Yorkshire BBS ░▒▓█\n\n"
     commands = []
-    if mail in interface.disabled is False:
+    if "mail" in interface.disabled is False:
         commands.append("[M]ail")
-    if bulletin in interface.disabled == False:
+    if "bulletin" in interface.disabled in False:
         commands.append("[B]ulletin")
-    if stats in interface.disabled == False:
+    if "stats" in interface.disabled is False:
         commands.append("[S]tats")
-    if fortune in interface.disabled == False:
+    if "fortune" in interface.disabled is False:
         commands.append("[F]ortune")
-    if wos in interface.disabled == False:
+    if "wos" in interface.disabled is False:
         commands.append("[W]all of Shame")
-    if channel in interface.disabled == False:
+    if "channel" in interface.disabled == False:
         commands.append("[C]hannel Directory")
     commands.append("[H]elp")
     
