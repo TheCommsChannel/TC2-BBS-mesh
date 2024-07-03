@@ -48,7 +48,7 @@ def handle_help_command(sender_id, interface, state=None):
         commands.append("[F]ortune")
     if "wos" in interface.disabled is False:
         commands.append("[W]all of Shame")
-    if "channel" in interface.disabled == False:
+    if "channel" in interface.disabled is False:
         commands.append("[C]hannel Directory")
     commands.append("[H]elp")
     
