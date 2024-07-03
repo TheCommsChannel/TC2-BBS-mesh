@@ -2,7 +2,7 @@
 
 """
 TC²-BBS Server for Meshtastic by TheCommsChannel (TC²)
-Date: 06/25/2024
+Date: 03/07/2024
 Yorkshire BBS Edition
 Version: 0.1.01
 
