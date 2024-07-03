@@ -337,7 +337,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             send_message(f"Mail has been posted to the mailbox of {recipient_name}.\n(╯°□°)╯📨📬", sender_id, interface)
 
             # Send notification to the recipient
-            notification_message = f"You have a new mail message from {sender_short_name}. Check your mailbox by responding to this message with M."
+            notification_message = f"You have new mail from {sender_short_name}. Check your mailbox by responding to this message with M."
             send_message(notification_message, recipient_id, interface)
 
             update_user_state(sender_id, None)
