@@ -112,7 +112,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             la2 = str(psutil.getloadavg()[1])
             la3 = str(psutil.getloadavg()[2])
             ramu = str(psutil.virtual_memory().percent)
-            response = "Version: 0.1.03\nCPU: " + cpu + "Mhz\nLoad: " + la1 + ", " + la2 + ", " + la3 + "\nRAM: " + ramu + "% Used"
+            response = "Version: 0.1.03_Dev\nCPU: " + cpu + "Mhz\nLoad: " + la1 + ", " + la2 + ", " + la3 + "\nRAM: " + ramu + "% Used"
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
             return
