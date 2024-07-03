@@ -52,6 +52,7 @@ def main():
     
     interface = get_interface(system_config)
     interface.bbs_nodes = system_config['bbs_nodes']
+    interface.disabled = system_config['disabled']
 
     logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
 
