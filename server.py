@@ -57,7 +57,7 @@ def main():
 
     initialize_database()
 
-    def receive_packet(packet):
+    def receive_packet(packet, interface):
         on_receive(packet, interface)
 
     pub.subscribe(receive_packet, system_config['mqtt_topic'])
