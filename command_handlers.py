@@ -315,7 +315,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
 
     elif step == 5:
         subject = message
-        send_message("Send your message. You can send it in multiple messages if it's too long for one.\nSend a single message with END when you're done", sender_id, interface)
+        send_message("Send your message. You can send it in multiple messages if it's too long.\nSend a message with 'END' when you're done", sender_id, interface)
         update_user_state(sender_id, {'command': 'MAIL', 'step': 7, 'recipient_id': state['recipient_id'], 'subject': subject, 'content': ''})
 
     elif step == 6:
@@ -337,7 +337,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             send_message(f"Mail has been posted to the mailbox of {recipient_name}.\n(╯°□°)╯📨📬", sender_id, interface)
 
             # Send notification to the recipient
-            notification_message = f"You have new mail from {sender_short_name}. Check your mailbox by responding to this message with M."
+            notification_message = f"You have new mail from {sender_short_name}. Check now by responding to this message with M."
             send_message(notification_message, recipient_id, interface)
 
             update_user_state(sender_id, None)
