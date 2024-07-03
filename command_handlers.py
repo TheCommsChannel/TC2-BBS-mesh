@@ -38,9 +38,9 @@ def handle_exit_command(sender_id, interface):
 def handle_help_command(sender_id, interface, state=None):
     title = "█▓▒░ Yorkshire BBS ░▒▓█\n\n"
     commands = [
-        "[M]ail Menu",
-        "[B]ulletin Menu",
-        "[S]tats Menu",
+        "[M]ail",
+        "[B]ulletin",
+        "[S]tats",
         "[F]ortune",
         #"[W]all of Shame",
         #"[C]hannel Directory",
@@ -53,7 +53,7 @@ def handle_help_command(sender_id, interface, state=None):
             commands = [
                 "[0]Read Mail",
                 "[1]Send Mail",
-                "[2]Exit Mail Menu"
+                "[2]Exit"
             ]
         elif current_command == 'BULLETIN':
             commands = [
@@ -61,19 +61,19 @@ def handle_help_command(sender_id, interface, state=None):
                 "[1]Info Board",
                 "[2]News Board",
                 "[3]Urgent Board",
-                "[4]Exit Bulletin Menu"
+                "[4]Exit"
             ]
         elif current_command == 'STATS':
             commands = [
                 "[0]Mesh Stats",
                 "[1]Server Stats",
-                "[2]Exit Stats Menu"
+                "[2]Exit"
             ]
     response = title + "\n".join(commands)
     send_message(response, sender_id, interface)
 
 def handle_stats_command(sender_id, interface):
-    response = "📈 STATS MENU 📈\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit Stats Menu"
+    response = "📈 STATS MENU 📈\n\n[0]Mesh Stats\n[1]Server Stats\n[2]Exit"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'STATS', 'step': 1})
 
@@ -98,7 +98,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             handle_help_command(sender_id, interface)
             return
         if choice == 0:
-            response = "📈 MESH STATS 📈\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Main Menu"
+            response = "📈 MESH STATS 📈\n\n[0]Node Numbers\n[1]Hardware\n[2]Roles\n[3]Exit"
             send_message(response, sender_id, interface)
             update_user_state(sender_id, {'command': 'STATS', 'step': 2})
         if choice == 1:
