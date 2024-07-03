@@ -266,7 +266,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
                 handle_help_command(sender_id, interface)
                 update_user_state(sender_id, None)
         elif choice == '1':
-            send_message("What is the Short Name of the node you want to leave a message for?", sender_id, interface)
+            send_message("What is the Short Name of the node you want to send mail to?", sender_id, interface)
             update_user_state(sender_id, {'command': 'MAIL', 'step': 3})
         elif choice == '2':
             handle_help_command(sender_id, interface)
@@ -298,7 +298,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             send_message(f"What is the subject of your message to {recipient_name}?\nKeep it short.", sender_id, interface)
             update_user_state(sender_id, {'command': 'MAIL', 'step': 5, 'recipient_id': recipient_id})
         else:
-            send_message("There are multiple nodes with that short name. Which one would you like to leave a message for?", sender_id, interface)
+            send_message("There are multiple nodes with that short name. Which one would you like to send mail to?", sender_id, interface)
             for i, node in enumerate(nodes):
                 send_message(f"[{i}] {node['longName']}", sender_id, interface)
             update_user_state(sender_id, {'command': 'MAIL', 'step': 6, 'nodes': nodes})
