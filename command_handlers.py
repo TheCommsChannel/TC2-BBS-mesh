@@ -38,19 +38,19 @@ def handle_exit_command(sender_id, interface):
 def handle_help_command(sender_id, interface, state=None):
     title = "█▓▒░ Yorkshire BBS ░▒▓█\n\n"
     commands = []
-        if mail in interface.disabled == False:
-            commands.append("[M]ail")
-        if bulletin in interface.disabled == False:
-            commands.append("[B]ulletin")
-        if stats in interface.disabled == False:
-            commands.append("[S]tats")
-        if fortune in interface.disabled == False:
-            commands.append("[F]ortune")
-        if wos in interface.disabled == False:
-            commands.append("[W]all of Shame")
-        if channel in interface.disabled == False:
-            commands.append("[C]hannel Directory")
-        commands.append("[H]elp")
+    if mail in interface.disabled == False:
+        commands.append("[M]ail")
+    if bulletin in interface.disabled == False:
+        commands.append("[B]ulletin")
+    if stats in interface.disabled == False:
+        commands.append("[S]tats")
+    if fortune in interface.disabled == False:
+        commands.append("[F]ortune")
+    if wos in interface.disabled == False:
+        commands.append("[W]all of Shame")
+    if channel in interface.disabled == False:
+        commands.append("[C]hannel Directory")
+    commands.append("[H]elp")
     
     if state and 'command' in state:
         current_command = state['command']
