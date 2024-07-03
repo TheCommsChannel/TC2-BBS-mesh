@@ -110,7 +110,11 @@ def initialize_config(config_file:str = None) -> dict[str, Any]:
     if bbs_nodes == ['']:
         bbs_nodes = []
 
-    return {'config':config, 'interface_type': interface_type, 'hostname': hostname, 'port': port, 'bbs_nodes': bbs_nodes, 'mqtt_topic': 'meshtastic.receive'}
+    disabled = config.get('modules', 'disabled', fallback='').split(',')
+    if disabled == ['']:
+        disabled = []
+
+    return {'config':config, 'interface_type': interface_type, 'hostname': hostname, 'port': port, 'bbs_nodes': bbs_nodes, 'disabled': disabled, 'mqtt_topic': 'meshtastic.receive'}
 
 
 def get_interface(system_config:dict[str, Any]) -> meshtastic.stream_interface.StreamInterface:
