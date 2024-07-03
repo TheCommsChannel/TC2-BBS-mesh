@@ -37,16 +37,21 @@ def handle_exit_command(sender_id, interface):
 
 def handle_help_command(sender_id, interface, state=None):
     title = "█▓▒░ Yorkshire BBS ░▒▓█\n\n"
-    commands = [
-        "[M]ail",
-        "[B]ulletin",
-        "[S]tats",
-        #"[F]ortune",
-        #"[W]all of Shame",
-        #"[C]hannel Directory",
-        #"EXIT: Exit current menu",
-        "[H]elp"
-    ]
+    commands = []
+        if mail in interface.disabled == False:
+            commands.append("[M]ail")
+        if bulletin in interface.disabled == False:
+            commands.append("[B]ulletin")
+        if stats in interface.disabled == False:
+            commands.append("[S]tats")
+        if fortune in interface.disabled == False:
+            commands.append("[F]ortune")
+        if wos in interface.disabled == False:
+            commands.append("[W]all of Shame")
+        if channel in interface.disabled == False:
+            commands.append("[C]hannel Directory")
+        commands.append("[H]elp")
+    
     if state and 'command' in state:
         current_command = state['command']
         if current_command == 'MAIL':
@@ -107,7 +112,7 @@ def handle_stats_steps(sender_id, message, step, interface, bbs_nodes):
             la2 = str(psutil.getloadavg()[1])
             la3 = str(psutil.getloadavg()[2])
             ramu = str(psutil.virtual_memory().percent)
-            response = "Version: 0.1.02_Dev\nCPU: " + cpu + "Mhz\nLoad: " + la1 + ", " + la2 + ", " + la3 + "\nRAM: " + ramu + "% Used"
+            response = "Version: 0.1.03_Dev\nCPU: " + cpu + "Mhz\nLoad: " + la1 + ", " + la2 + ", " + la3 + "\nRAM: " + ramu + "% Used"
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
             return

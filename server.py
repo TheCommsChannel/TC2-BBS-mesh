@@ -4,7 +4,7 @@
 TC²-BBS Server for Meshtastic by TheCommsChannel (TC²)
 Date: 03/07/2024
 Yorkshire BBS Edition
-Version: 0.1.02_Dev
+Version: 0.1.03_Dev
 
 Description:
 The system allows for mail message handling, bulletin boards, and a channel
@@ -33,7 +33,7 @@ def display_banner():
    ██║   ╚██████╗███████╗      ██████╔╝██████╔╝███████║
    ╚═╝    ╚═════╝╚══════╝      ╚═════╝ ╚═════╝ ╚══════╝
 Yorkshire BBS Edition
-Version: 0.1.02_Dev
+Version: 0.1.03_Dev
 """
     print(banner)
 
@@ -54,6 +54,7 @@ def main():
     
     interface = get_interface(system_config)
     interface.bbs_nodes = system_config['bbs_nodes']
+    interface.disabled = system_config['disabled']
 
     logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
 
