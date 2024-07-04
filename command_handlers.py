@@ -273,7 +273,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             update_user_state(sender_id, None)
 
     elif step == 3:
-        short_name = message
+        short_name = message.lower()
         nodes = get_node_info(interface, short_name)
         if not nodes:
             send_message("I'm unable to find that node in my database.", sender_id, interface)
