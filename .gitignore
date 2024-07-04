@@ -2,3 +2,4 @@ __pycache__/
 bulletins.db
 venv/
 .venv
+.idea

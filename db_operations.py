@@ -132,17 +132,16 @@ def get_mail_content(mail_id, recipient_id):
     return c.fetchone()
 
 def delete_mail(unique_id, recipient_id, bbs_nodes, interface):
-    # TODO: ensure only recipient can delete mail
-    logging.info(f"Attempting to delete mail with unique_id: {unique_id} by {recipient_id}")
     conn = get_db_connection()
     c = conn.cursor()
     try:
-        c.execute("SELECT unique_id FROM mail WHERE unique_id = ? and recipient = ?", (unique_id, recipient_id,))
+        c.execute("SELECT recipient FROM mail WHERE unique_id = ?", (unique_id,))
         result = c.fetchone()
-        logging.debug(f"Fetch result for unique_id {unique_id}: {result}")
         if result is None:
             logging.error(f"No mail found with unique_id: {unique_id}")
             return  # Early exit if no matching mail found
+        recipient_id = result[0]
+        logging.info(f"Attempting to delete mail with unique_id: {unique_id} by {recipient_id}")
         c.execute("DELETE FROM mail WHERE unique_id = ? and recipient = ?", (unique_id, recipient_id,))
         conn.commit()
         send_delete_mail_to_bbs_nodes(unique_id, bbs_nodes, interface)
@@ -150,3 +149,5 @@ def delete_mail(unique_id, recipient_id, bbs_nodes, interface):
     except Exception as e:
         logging.error(f"Error deleting mail with unique_id {unique_id}: {e}")
         raise
+
+

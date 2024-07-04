@@ -9,7 +9,7 @@ from command_handlers import (
     handle_channel_directory_command, handle_channel_directory_steps
 )
 
-from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail
+from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection
 from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message
 
 command_handlers = {
@@ -47,7 +47,8 @@ def process_message(sender_id, message, interface, is_sync_message=False):
         elif message.startswith("DELETE_MAIL|"):
             unique_id = message.split("|")[1]
             logging.info(f"Processing delete mail with unique_id: {unique_id}")
-            delete_mail(unique_id, [], interface)
+            recipient_id = get_recipient_id_by_mail(unique_id)  # Fetch the recipient_id using this helper function
+            delete_mail(unique_id, recipient_id, [], interface)
     else:
         if message_lower in command_handlers:
             command_handlers[message_lower](sender_id, interface)
@@ -95,3 +96,13 @@ def on_receive(packet, interface):
                 logging.info("Ignoring message sent to group chat or from unknown node")
     except KeyError as e:
         logging.error(f"Error processing packet: {e}")
+
+def get_recipient_id_by_mail(unique_id):
+    # Fix for Mail Delete sync issue
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("SELECT recipient FROM mail WHERE unique_id = ?", (unique_id,))
+    result = c.fetchone()
+    if result:
+        return result[0]
+    return None

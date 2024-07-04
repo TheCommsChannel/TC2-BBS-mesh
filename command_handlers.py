@@ -41,7 +41,7 @@ def handle_exit_command(sender_id, interface):
 
 
 def handle_help_command(sender_id, interface, state=None):
-    title = "█▓▒░ TC² BBS ░▒▓█\n"
+    title = "TC2 BBS\n"
     commands = [
         "[M]ail Menu",
         "[B]ulletin Menu",
