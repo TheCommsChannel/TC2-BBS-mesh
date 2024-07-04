@@ -2,15 +2,55 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B1OZ22Z)
 
-This is the TC²-BBS system integrated with Meshtastic devices. The system allows for message handling, bulletin boards, mail systems, and a channel directory.
+This is the TC²-BBS system integrated with Meshtastic devices. The system allows for message handling,bulletin boards, mail systems, and a channel directory.
 
-### Docker
+### Docker available
 
 If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
 
 [![Docker HUB](https://icon-icons.com/downloadimage.php?id=151885&root=2530/PNG/128/&file=docker_button_icon_151885.png)](https://hub.docker.com/r/thealhu/tc2-bbs-mesh)
 
-## Setup
+
+
+### Docker Automatic Script Deployment
+
+With this single command, TC²-BBS Meshtastic can be easily installed on Debian and all Debian-based Linux distributions, including Raspbian OS.
+**Warning:** To perform the installation, make sure you are in the root user. You can switch to the root user with sudo -i or su - root if you are not already.
+
+    curl -fsSL https://raw.githubusercontent.com/TheCommsChannel/TC2-BBS-mesh/main/docker/auto_docker_install_debian.sh | bash
+
+### Docker configuration:
+    
+After executing the Automatic Script Deployment command, TC²-BBS Meshtastic still needs to be configured. First, navigate to the installation directory where the Docker Compose definition is stored:
+
+    cd ./TC2-BBS-mesh-docker
+
+**This step is optional:** if the mestastic node is connected to the system via USB, we need to pass it through to the newly created Docker container so that it can control the USB device:
+
+nano docker-compose.yaml
+
+	# devices:                      <- uncomment if one of the two is needed
+	# - /dev/ttyUSB0:/dev/ttyUSB0   <- uncomment if needed
+	# - /dev/ttyACM0:/dev/ttyACM0   <- uncomment if needed
+
+To customize the config file of the TC²-BBS server software itself:
+
+    nano ./config/config.ini
+    
+After that, the TC²-BBS Meshtastic can simply be started as a service in the background:
+
+    docker compose up -d     
+    
+        #for debugging use:
+        docker compose up
+    	
+        #for stopping use:
+        docker compose down
+
+
+  
+
+## Setup manually 
 
 ### Requirements
 
@@ -54,7 +94,8 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
    pip install -r requirements.txt
    ```
 
-5. Set up the configuration in `config.ini`:  
+## Configure config.ini
+Set up the configuration in `config.ini`:  
    
    **[interface]**  
    If using `type = serial` and you have multiple devices connected, you will need to uncomment the `port =` line and enter the port of your device.   
@@ -85,7 +126,7 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
    bbs_nodes = !f53f4abc,!f3abc123  
    ```
 
-### Running the Server
+## Running the Server manually
 
 Run the server with:
 
