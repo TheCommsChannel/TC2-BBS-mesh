@@ -171,7 +171,7 @@ If you would like to have the script automatically run at boot, follow the steps
    sudo systemctl stop mesh-bbs.service
    ```
    
-   If you make changes to the watchlist.txt file, you will need to restart the service with the following command:
+   If you need to restart the service, you can do so with the following command:
    
    ```sh
    sudo systemctl restart mesh-bbs.service
