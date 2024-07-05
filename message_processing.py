@@ -6,21 +6,22 @@ from command_handlers import (
     handle_mail_command, handle_bulletin_command, handle_exit_command,
     handle_help_command, handle_stats_command, handle_fortune_command,
     handle_bb_steps, handle_mail_steps, handle_stats_steps, handle_wall_of_shame_command,
-    handle_channel_directory_command, handle_channel_directory_steps
+    handle_channel_directory_command, handle_channel_directory_steps, handle_send_mail_command,
+    handle_read_mail_command, handle_check_mail_command, handle_delete_mail_confirmation, handle_post_bulletin_command,
+    handle_check_bulletin_command, handle_read_bulletin_command, handle_read_channel_command,
+    handle_post_channel_command, handle_list_channels_command, handle_quick_help_command
 )
 
-from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection
+from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection, add_channel
 from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message
 
 command_handlers = {
-    "m": handle_mail_command,
-    "b": handle_bulletin_command,
-    "s": handle_stats_command,
-    "f": handle_fortune_command,
-    "w": handle_wall_of_shame_command,
+    "qch": handle_quick_help_command,
+    "st": handle_stats_command,
+    "fo": handle_fortune_command,
+    "ws": handle_wall_of_shame_command,
     "exit": handle_exit_command,
-    "h": handle_help_command,
-    "c": handle_channel_directory_command
+    "help": handle_help_command
 }
 
 def process_message(sender_id, message, interface, is_sync_message=False):
@@ -49,6 +50,10 @@ def process_message(sender_id, message, interface, is_sync_message=False):
             logging.info(f"Processing delete mail with unique_id: {unique_id}")
             recipient_id = get_recipient_id_by_mail(unique_id)  # Fetch the recipient_id using this helper function
             delete_mail(unique_id, recipient_id, [], interface)
+        elif message.startswith("CHANNEL|"):
+            parts = message.split("|")
+            channel_name, channel_url = parts[1], parts[2]
+            add_channel(channel_name, channel_url)
     else:
         if message_lower in command_handlers:
             command_handlers[message_lower](sender_id, interface)
@@ -64,8 +69,35 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                 handle_stats_steps(sender_id, message, step, interface, bbs_nodes)
             elif command == 'CHANNEL_DIRECTORY':
                 handle_channel_directory_steps(sender_id, message, step, state, interface)
+            elif command == 'CHECK_MAIL':
+                if step == 1:
+                    handle_read_mail_command(sender_id, message, state, interface)
+                elif step == 2:
+                    handle_delete_mail_confirmation(sender_id, message, state, interface, bbs_nodes)
+            elif command == 'CHECK_BULLETIN':
+                if step == 1:
+                    handle_read_bulletin_command(sender_id, message, state, interface)
+            elif command == 'CHECK_CHANNEL':
+                if step == 1:
+                    handle_read_channel_command(sender_id, message, state, interface)
+            elif command == 'LIST_CHANNELS':
+                if step == 1:
+                    handle_read_channel_command(sender_id, message, state, interface)
+        elif message.startswith("SM|"):
+            handle_send_mail_command(sender_id, message, interface, bbs_nodes)
+        elif message.startswith("CM"):
+            handle_check_mail_command(sender_id, interface)
+        elif message.startswith("PB|"):
+            handle_post_bulletin_command(sender_id, message, interface, bbs_nodes)
+        elif message.startswith("CB|"):
+            handle_check_bulletin_command(sender_id, message, interface)
+        elif message.startswith("CHP|"):
+            handle_post_channel_command(sender_id, message, interface)
+        elif message.startswith("CHL"):
+            handle_list_channels_command(sender_id, interface)
         else:
             handle_help_command(sender_id, interface)
+
 
 def on_receive(packet, interface):
     try:

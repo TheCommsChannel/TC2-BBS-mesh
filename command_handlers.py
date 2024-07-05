@@ -2,6 +2,8 @@ import logging
 import random
 import time
 
+from meshtastic import BROADCAST_NUM
+
 from config_init import initialize_config
 from db_operations import (
     add_bulletin, add_mail, delete_mail,
@@ -41,16 +43,14 @@ def handle_exit_command(sender_id, interface):
 
 
 def handle_help_command(sender_id, interface, state=None):
-    title = "TC2 BBS\n"
+    title = "💾TC2 BBS💾\n"
     commands = [
-        "[M]ail Menu",
-        "[B]ulletin Menu",
-        "[S]tats Menu",
-        "[F]ortune",
-        "[W]all of Shame",
-        "[C]hannel Directory",
-        "EXIT: Exit current menu",
-        "[H]elp"
+        "[QCH] - Quick Commands",
+        "[St]ats Menu",
+        "[Fo]rtune",
+        "[WS]Wall of Shame",
+        "[EXIT]",
+        "[HELP]"
     ]
     if state and 'command' in state:
         current_command = state['command']
@@ -322,8 +322,7 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             unique_id = add_mail(get_node_id_from_num(sender_id, interface), sender_short_name, recipient_id, subject, content, bbs_nodes, interface)
             send_message(f"Mail has been posted to the mailbox of {recipient_name}.\n(╯°□°)╯📨📬", sender_id, interface)
 
-            # Send notification to the recipient
-            notification_message = f"You have a new mail message from {sender_short_name}. Check your mailbox by responding to this message with M."
+            notification_message = f"You have a new mail message from {sender_short_name}. Check your mailbox by responding to this message with CM."
             send_message(notification_message, recipient_id, interface)
 
             update_user_state(sender_id, None)
@@ -398,3 +397,277 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
         add_channel(channel_name, channel_url)
         send_message(f"Your channel '{channel_name}' has been added to the directory.", sender_id, interface)
         handle_channel_directory_command(sender_id, interface)
+
+
+def handle_send_mail_command(sender_id, message, interface, bbs_nodes):
+    try:
+        parts = message.split("|", 3)
+        if len(parts) != 4:
+            send_message("Send Mail Quick Command format:\nSM|{short_name}|{subject}|{message}", sender_id, interface)
+            return
+
+        _, short_name, subject, content = parts
+        nodes = get_node_info(interface, short_name.lower())
+        if not nodes:
+            send_message(f"Node with short name '{short_name}' not found.", sender_id, interface)
+            return
+        if len(nodes) > 1:
+            send_message(f"Multiple nodes with short name '{short_name}' found. Please be more specific.", sender_id,
+                         interface)
+            return
+
+        recipient_id = nodes[0]['num']
+        recipient_name = get_node_name(recipient_id, interface)
+        sender_short_name = get_node_short_name(get_node_id_from_num(sender_id, interface), interface)
+
+        unique_id = add_mail(get_node_id_from_num(sender_id, interface), sender_short_name, recipient_id, subject,
+                             content, bbs_nodes, interface)
+        send_message(f"Mail has been sent to {recipient_name}.", sender_id, interface)
+
+        notification_message = f"You have a new mail message from {sender_short_name}. Check your mailbox by responding to this message with M."
+        send_message(notification_message, recipient_id, interface)
+
+    except Exception as e:
+        logging.error(f"Error processing send mail command: {e}")
+        send_message("Error processing send mail command.", sender_id, interface)
+
+
+def handle_check_mail_command(sender_id, interface):
+    try:
+        sender_node_id = get_node_id_from_num(sender_id, interface)
+        mail = get_mail(sender_node_id)
+        if not mail:
+            send_message("You have no new messages.", sender_id, interface)
+            return
+
+        response = "📬 You have the following messages:\n"
+        for i, msg in enumerate(mail):
+            response += f"{i + 1:02d}. From: {msg[1]}, Subject: {msg[2]}, Date: {msg[3]}\n"
+        response += "\nPlease reply with the number of the message you want to read."
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, {'command': 'CHECK_MAIL', 'step': 1, 'mail': mail})
+
+    except Exception as e:
+        logging.error(f"Error processing check mail command: {e}")
+        send_message("Error processing check mail command.", sender_id, interface)
+
+
+def handle_read_mail_command(sender_id, message, state, interface):
+    try:
+        mail = state.get('mail', [])
+        message_number = int(message) - 1
+
+        if message_number < 0 or message_number >= len(mail):
+            send_message("Invalid message number. Please try again.", sender_id, interface)
+            return
+
+        mail_id = mail[message_number][0]
+        sender_node_id = get_node_id_from_num(sender_id, interface)
+        sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
+        response = f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n\n{content}"
+        send_message(response, sender_id, interface)
+        send_message("Would you like to delete this message now that you've read it? Y/N", sender_id, interface)
+        update_user_state(sender_id, {'command': 'CHECK_MAIL', 'step': 2, 'mail_id': mail_id, 'unique_id': unique_id})
+
+    except ValueError:
+        send_message("Invalid input. Please enter a valid message number.", sender_id, interface)
+    except Exception as e:
+        logging.error(f"Error processing read mail command: {e}")
+        send_message("Error processing read mail command.", sender_id, interface)
+
+
+def handle_delete_mail_confirmation(sender_id, message, state, interface, bbs_nodes):
+    try:
+        choice = message.lower()
+        if choice == 'y':
+            unique_id = state['unique_id']
+            sender_node_id = get_node_id_from_num(sender_id, interface)
+            delete_mail(unique_id, sender_node_id, bbs_nodes, interface)
+            send_message("The message has been deleted 🗑️", sender_id, interface)
+        else:
+            send_message("The message has been kept in your inbox.✉️", sender_id, interface)
+
+        update_user_state(sender_id, None)
+
+    except Exception as e:
+        logging.error(f"Error processing delete mail confirmation: {e}")
+        send_message("Error processing delete mail confirmation.", sender_id, interface)
+
+
+def handle_post_bulletin_command(sender_id, message, interface, bbs_nodes):
+    try:
+        parts = message.split("|", 3)
+        if len(parts) != 4:
+            send_message("Post Bulletin Quick Command format:\nPB|{board_name}|{subject}|{content}", sender_id, interface)
+            return
+
+        _, board_name, subject, content = parts
+        sender_short_name = get_node_short_name(get_node_id_from_num(sender_id, interface), interface)
+
+        unique_id = add_bulletin(board_name, sender_short_name, subject, content, bbs_nodes, interface)
+        send_message(f"Your bulletin '{subject}' has been posted to {board_name}.", sender_id, interface)
+
+        # New logic to send group chat notification for urgent bulletins
+        if board_name.lower() == "urgent":
+            notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}"
+            send_message(notification_message, BROADCAST_NUM, interface)
+
+    except Exception as e:
+        logging.error(f"Error processing post bulletin command: {e}")
+        send_message("Error processing post bulletin command.", sender_id, interface)
+
+
+def handle_check_bulletin_command(sender_id, message, interface):
+    try:
+        parts = message.split("|", 2)
+        if len(parts) != 2:
+            send_message("Check Bulletins Quick Command format:\nCB|{board_name}", sender_id, interface)
+            return
+
+        _, board_name = parts
+        bulletins = get_bulletins(board_name)
+        if not bulletins:
+            send_message(f"No bulletins available on {board_name} board.", sender_id, interface)
+            return
+
+        response = f"📰 Bulletins on {board_name} board:\n"
+        for i, bulletin in enumerate(bulletins):
+            response += f"[{i+1:02d}] Subject: {bulletin[1]}, From: {bulletin[2]}, Date: {bulletin[3]}\n"
+        response += "\nPlease reply with the number of the bulletin you want to read."
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, {'command': 'CHECK_BULLETIN', 'step': 1, 'board_name': board_name, 'bulletins': bulletins})
+
+    except Exception as e:
+        logging.error(f"Error processing check bulletin command: {e}")
+        send_message("Error processing check bulletin command.", sender_id, interface)
+
+def handle_read_bulletin_command(sender_id, message, state, interface):
+    try:
+        bulletins = state.get('bulletins', [])
+        message_number = int(message) - 1
+
+        if message_number < 0 or message_number >= len(bulletins):
+            send_message("Invalid bulletin number. Please try again.", sender_id, interface)
+            return
+
+        bulletin_id = bulletins[message_number][0]
+        sender, date, subject, content, unique_id = get_bulletin_content(bulletin_id)
+        response = f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n\n{content}"
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, None)
+
+    except ValueError:
+        send_message("Invalid input. Please enter a valid bulletin number.", sender_id, interface)
+    except Exception as e:
+        logging.error(f"Error processing read bulletin command: {e}")
+        send_message("Error processing read bulletin command.", sender_id, interface)
+
+
+def handle_post_channel_command(sender_id, message, interface):
+    try:
+        parts = message.split("|", 3)
+        if len(parts) != 3:
+            send_message("Post Channel Quick Command format:\nCHP|{channel_name}|{channel_url}", sender_id, interface)
+            return
+
+        _, channel_name, channel_url = parts
+        bbs_nodes = interface.bbs_nodes
+        add_channel(channel_name, channel_url, bbs_nodes, interface)
+        send_message(f"Channel '{channel_name}' has been added to the directory.", sender_id, interface)
+
+    except Exception as e:
+        logging.error(f"Error processing post channel command: {e}")
+        send_message("Error processing post channel command.", sender_id, interface)
+
+
+def handle_check_channel_command(sender_id, interface):
+    try:
+        channels = get_channels()
+        if not channels:
+            send_message("No channels available in the directory.", sender_id, interface)
+            return
+
+        response = "📚 Available Channels:\n"
+        for i, channel in enumerate(channels):
+            response += f"{i + 1:02d}. Name: {channel[0]}\n"
+        response += "\nPlease reply with the number of the channel you want to view."
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, {'command': 'CHECK_CHANNEL', 'step': 1, 'channels': channels})
+
+    except Exception as e:
+        logging.error(f"Error processing check channel command: {e}")
+        send_message("Error processing check channel command.", sender_id, interface)
+
+
+def handle_read_channel_command(sender_id, message, state, interface):
+    try:
+        channels = state.get('channels', [])
+        message_number = int(message) - 1
+
+        if message_number < 0 or message_number >= len(channels):
+            send_message("Invalid channel number. Please try again.", sender_id, interface)
+            return
+
+        channel_name, channel_url = channels[message_number]
+        response = f"Channel Name: {channel_name}\nChannel URL: {channel_url}"
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, None)
+
+    except ValueError:
+        send_message("Invalid input. Please enter a valid channel number.", sender_id, interface)
+    except Exception as e:
+        logging.error(f"Error processing read channel command: {e}")
+        send_message("Error processing read channel command.", sender_id, interface)
+
+
+def handle_list_channels_command(sender_id, interface):
+    try:
+        channels = get_channels()
+        if not channels:
+            send_message("No channels available in the directory.", sender_id, interface)
+            return
+
+        response = "📚 Available Channels:\n"
+        for i, channel in enumerate(channels):
+            response += f"{i+1:02d}. Name: {channel[0]}\n"
+        response += "\nPlease reply with the number of the channel you want to view."
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, {'command': 'LIST_CHANNELS', 'step': 1, 'channels': channels})
+
+    except Exception as e:
+        logging.error(f"Error processing list channels command: {e}")
+        send_message("Error processing list channels command.", sender_id, interface)
+
+def handle_read_channel_command(sender_id, message, state, interface):
+    try:
+        channels = state.get('channels', [])
+        message_number = int(message) - 1
+
+        if message_number < 0 or message_number >= len(channels):
+            send_message("Invalid channel number. Please try again.", sender_id, interface)
+            return
+
+        channel_name, channel_url = channels[message_number]
+        response = f"Channel Name: {channel_name}\nChannel URL: {channel_url}"
+        send_message(response, sender_id, interface)
+
+        update_user_state(sender_id, None)
+
+    except ValueError:
+        send_message("Invalid input. Please enter a valid channel number.", sender_id, interface)
+    except Exception as e:
+        logging.error(f"Error processing read channel command: {e}")
+        send_message("Error processing read channel command.", sender_id, interface)
+
+
+def handle_quick_help_command(sender_id, interface):
+    response = ("🏃QUICK COMMANDS🏃‍➡️\nSend command and pipe symbol -> | to learn how to use each one\nSM| - Send "
+                "Mail\nCM - Check Mail (No Pipe)\nPB| - Post Bulletin\nCB| - Check Bulletins\nCHP| - Post "
+                "Channel\nCHL - List Channels (no Pipe)")
+    send_message(response, sender_id, interface)

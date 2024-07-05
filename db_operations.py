@@ -10,7 +10,7 @@ from utils import (
     send_bulletin_to_bbs_nodes,
     send_delete_bulletin_to_bbs_nodes,
     send_delete_mail_to_bbs_nodes,
-    send_mail_to_bbs_nodes, send_message
+    send_mail_to_bbs_nodes, send_message, send_channel_to_bbs_nodes
 )
 
 
@@ -51,11 +51,15 @@ def initialize_database():
     conn.commit()
     print("Database schema initialized.")
 
-def add_channel(name, url):
+def add_channel(name, url, bbs_nodes=None, interface=None):
     conn = get_db_connection()
     c = conn.cursor()
     c.execute("INSERT INTO channels (name, url) VALUES (?, ?)", (name, url))
     conn.commit()
+
+    if bbs_nodes and interface:
+        send_channel_to_bbs_nodes(name, url, bbs_nodes, interface)
+
 
 def get_channels():
     conn = get_db_connection()
@@ -84,6 +88,7 @@ def add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interfac
         send_message(notification_message, BROADCAST_NUM, interface)
 
     return unique_id
+
 
 def get_bulletins(board):
     conn = get_db_connection()
