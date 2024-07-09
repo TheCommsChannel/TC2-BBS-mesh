@@ -2,8 +2,8 @@
 
 """
 TC²-BBS Server for Meshtastic by TheCommsChannel (TC²)
-Date: 06/25/2024
-Version: 0.1.0
+Date: 07/09/2024
+Version: 0.1.4
 
 Description:
 The system allows for mail message handling, bulletin boards, and a channel
