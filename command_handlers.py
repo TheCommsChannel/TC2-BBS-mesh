@@ -8,7 +8,7 @@ from db_operations import (
     add_bulletin, add_mail, delete_mail,
     get_bulletin_content, get_bulletins,
     get_mail, get_mail_content,
-    add_channel, get_channels
+    add_channel, get_channels, get_sender_id_by_mail_id
 )
 from utils import (
     get_node_id_from_num, get_node_info,
@@ -150,8 +150,10 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             if board_name.lower() == 'urgent':
                 node_id = get_node_id_from_num(sender_id, interface)
                 allowed_nodes = interface.allowed_nodes
+                print(f"Checking permissions for node_id: {node_id} with allowed_nodes: {allowed_nodes}")  # Debug statement
                 if allowed_nodes and node_id not in allowed_nodes:
                     send_message("You don't have permission to post to this board.", sender_id, interface)
+                    handle_bb_steps(sender_id, 'e', 1, state, interface, bbs_nodes)
                     return
             send_message("What is the subject of your bulletin? Keep it short.", sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN_POST', 'step': 4, 'board': board_name})
@@ -188,6 +190,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             update_user_state(sender_id, state)
 
 
+
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
     if step == 1:
         choice = message.lower()
@@ -214,8 +217,8 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             sender_node_id = get_node_id_from_num(sender_id, interface)
             sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
             send_message(f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n{content}", sender_id, interface)
-            send_message("Would you like to delete this message now that you've viewed it? Y/N", sender_id, interface)
-            update_user_state(sender_id, {'command': 'MAIL', 'step': 4, 'mail_id': mail_id, 'unique_id': unique_id})
+            send_message("What would you like to do with this message?\n[K]eep  [D]elete  [R]eply", sender_id, interface)
+            update_user_state(sender_id, {'command': 'MAIL', 'step': 4, 'mail_id': mail_id, 'unique_id': unique_id, 'sender': sender, 'subject': subject, 'content': content})
         except TypeError:
             logging.info(f"Node {sender_id} tried to access non-existent message")
             send_message("Mail not found", sender_id, interface)
@@ -239,14 +242,19 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             update_user_state(sender_id, {'command': 'MAIL', 'step': 6, 'nodes': nodes})
 
     elif step == 4:
-        if message.lower() == "y":
+        if message.lower() == "d":
             unique_id = state['unique_id']
             sender_node_id = get_node_id_from_num(sender_id, interface)
             delete_mail(unique_id, sender_node_id, bbs_nodes, interface)
             send_message("The message has been deleted 🗑️", sender_id, interface)
+            update_user_state(sender_id, None)
+        elif message.lower() == "r":
+            sender = state['sender']
+            send_message(f"Send your reply to {sender} now, followed by a message with END", sender_id, interface)
+            update_user_state(sender_id, {'command': 'MAIL', 'step': 7, 'reply_to_mail_id': state['mail_id'], 'subject': f"Re: {state['subject']}", 'content': ''})
         else:
             send_message("The message has been kept in your inbox.✉️", sender_id, interface)
-        update_user_state(sender_id, None)
+            update_user_state(sender_id, None)
 
     elif step == 5:
         subject = message
@@ -263,10 +271,14 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
 
     elif step == 7:
         if message.lower() == "end":
-            recipient_id = state['recipient_id']
+            if 'reply_to_mail_id' in state:
+                recipient_id = get_sender_id_by_mail_id(state['reply_to_mail_id'])  # Get the sender ID from the mail ID
+            else:
+                recipient_id = state.get('recipient_id')
             subject = state['subject']
             content = state['content']
             recipient_name = get_node_name(recipient_id, interface)
+
             sender_short_name = get_node_short_name(get_node_id_from_num(sender_id, interface), interface)
             unique_id = add_mail(get_node_id_from_num(sender_id, interface), sender_short_name, recipient_id, subject, content, bbs_nodes, interface)
             send_message(f"Mail has been posted to the mailbox of {recipient_name}.\n(╯°□°)╯📨📬", sender_id, interface)
@@ -286,7 +298,6 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
         else:
             send_message("Okay, feel free to send another command.", sender_id, interface)
             update_user_state(sender_id, None)
-
 
 
 def handle_wall_of_shame_command(sender_id, interface):

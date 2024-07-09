@@ -156,3 +156,11 @@ def delete_mail(unique_id, recipient_id, bbs_nodes, interface):
         raise
 
 
+def get_sender_id_by_mail_id(mail_id):
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("SELECT sender FROM mail WHERE id = ?", (mail_id,))
+    result = c.fetchone()
+    if result:
+        return result[0]
+    return None

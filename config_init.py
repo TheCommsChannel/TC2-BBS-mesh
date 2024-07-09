@@ -112,9 +112,13 @@ def initialize_config(config_file: str = None) -> dict[str, Any]:
     if bbs_nodes == ['']:
         bbs_nodes = []
 
+    print(f"Configured to sync with the following BBS nodes: {bbs_nodes}")
+
     allowed_nodes = config.get('allow_list', 'allowed_nodes', fallback='').split(',')
     if allowed_nodes == ['']:
         allowed_nodes = []
+
+    print(f"Nodes with Urgent board permissions: {allowed_nodes}")
 
     return {
         'config': config,

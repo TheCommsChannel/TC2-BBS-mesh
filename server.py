@@ -35,8 +35,6 @@ Meshtastic Version
 """
     print(banner)
 
-
-
 def main():
     display_banner()
     args = init_cli_parser()
