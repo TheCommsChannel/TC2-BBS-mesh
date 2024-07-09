@@ -129,7 +129,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
         if message.lower() == 'e':
             handle_help_command(sender_id, interface, 'bbs')
             return
-        board_name = state['board']
+        board_name = boards[int(message)]
         response = f"What would you like to do in the {board_name} board?\n[R]ead  [P]ost"
         send_message(response, sender_id, interface)
         update_user_state(sender_id, {'command': 'BULLETIN_ACTION', 'step': 2, 'board': board_name})
@@ -147,6 +147,12 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
                 send_message(f"No bulletins in {board_name}.", sender_id, interface)
                 handle_bb_steps(sender_id, 'e', 1, state, interface, bbs_nodes)
         elif message.lower() == 'p':
+            if board_name.lower() == 'urgent':
+                node_id = get_node_id_from_num(sender_id, interface)
+                allowed_nodes = interface.allowed_nodes
+                if allowed_nodes and node_id not in allowed_nodes:
+                    send_message("You don't have permission to post to this board.", sender_id, interface)
+                    return
             send_message("What is the subject of your bulletin? Keep it short.", sender_id, interface)
             update_user_state(sender_id, {'command': 'BULLETIN_POST', 'step': 4, 'board': board_name})
 
@@ -180,7 +186,6 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
         else:
             state['content'] += message + "\n"
             update_user_state(sender_id, state)
-
 
 
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):

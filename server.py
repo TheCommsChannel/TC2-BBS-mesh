@@ -39,19 +39,17 @@ Meshtastic Version
 
 def main():
     display_banner()
-    # config, interface_type, hostname, port, bbs_nodes = initialize_config()
     args = init_cli_parser()
     config_file = None
     if args.config is not None:
         config_file = args.config
     system_config = initialize_config(config_file)
-    
+
     merge_config(system_config, args)
-    
-    # print(f"{system_config=}")
-    
+
     interface = get_interface(system_config)
     interface.bbs_nodes = system_config['bbs_nodes']
+    interface.allowed_nodes = system_config['allowed_nodes']
 
     logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
 
