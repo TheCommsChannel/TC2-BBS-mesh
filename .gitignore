@@ -4,3 +4,4 @@ venv/
 .venv
 .idea
 config.ini
+fortunes.txt
