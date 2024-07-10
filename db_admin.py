@@ -1,11 +1,6 @@
-import logging
+import os
 import sqlite3
 import threading
-import uuid
-from datetime import datetime
-import os
-
-# Import functions from meshtastic and utils as needed
 
 thread_local = threading.local()
 
@@ -157,7 +152,6 @@ Database Administrator
     print_separator()
 
 def clear_screen():
-    # Clear the console screen
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def input_bold(prompt):
