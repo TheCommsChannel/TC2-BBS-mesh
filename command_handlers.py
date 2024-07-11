@@ -480,12 +480,13 @@ def handle_post_bulletin_command(sender_id, message, interface, bbs_nodes):
 
 def handle_check_bulletin_command(sender_id, message, interface):
     try:
-        parts = message.split(",,", 2)
-        if len(parts) != 2:
+        # Split the message only once
+        parts = message.split(",,", 1)
+        if len(parts) != 2 or not parts[1].strip():
             send_message("Check Bulletins Quick Command format:\nCB,,{board_name}", sender_id, interface)
             return
 
-        _, board_name = parts
+        board_name = parts[1].strip()
         bulletins = get_bulletins(board_name)
         if not bulletins:
             send_message(f"No bulletins available on {board_name} board.", sender_id, interface)
