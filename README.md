@@ -61,6 +61,8 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
    ```
 
 6. Set up the configuration in `config.ini`:  
+
+   You'll need to open up the config.ini file in a text editor and make your changes following the instructions below
    
    **[interface]**  
    If using `type = serial` and you have multiple devices connected, you will need to uncomment the `port =` line and enter the port of your device.   
