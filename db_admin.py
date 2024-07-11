@@ -133,9 +133,9 @@ def display_menu():
     print("1. List Bulletins")
     print("2. List Mail")
     print("3. List Channels")
-    print("4. Delete Bulletin")
+    print("4. Delete Bulletins")
     print("5. Delete Mail")
-    print("6. Delete Channel")
+    print("6. Delete Channels")
     print("7. Exit")
 
 def display_banner():
