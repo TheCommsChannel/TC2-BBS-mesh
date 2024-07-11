@@ -349,7 +349,7 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
 
     elif step == 3:
         channel_name = message
-        send_message("Send a message with your channel URL:", sender_id, interface)
+        send_message("Send a message with your channel URL or PSK:", sender_id, interface)
         update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 4, 'channel_name': channel_name})
 
     elif step == 4:
