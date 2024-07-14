@@ -21,15 +21,13 @@ def handle_help_command(sender_id, interface, menu_name=None):
     if menu_name:
         update_user_state(sender_id, {'command': 'MENU', 'menu': menu_name, 'step': 1})
         if menu_name == 'bbs':
-            response = "📰BBS Menu📰\n[M]ail\n[B]ulletins\n[C]hannel Dir\nE[X]IT"
+            response = "📰BBS Menu📰\n[M]ail\n[B]ulletins\n[C]hannel Dir\n[J]S8CALL\nE[X]IT"
         elif menu_name == 'utilities':
             response = "🛠️Utilities Menu🛠️\n[S]tats\n[F]ortune\n[W]all of Shame\nE[X]IT"
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
         response = "💾TC² BBS💾\n[Q]uick Commands\n[B]BS\n[U]tilities\nE[X]IT"
     send_message(response, sender_id, interface)
-
-
 
 
 def get_node_name(node_id, interface):
@@ -604,27 +602,6 @@ def handle_list_channels_command(sender_id, interface):
     except Exception as e:
         logging.error(f"Error processing list channels command: {e}")
         send_message("Error processing list channels command.", sender_id, interface)
-
-def handle_read_channel_command(sender_id, message, state, interface):
-    try:
-        channels = state.get('channels', [])
-        message_number = int(message) - 1
-
-        if message_number < 0 or message_number >= len(channels):
-            send_message("Invalid channel number. Please try again.", sender_id, interface)
-            return
-
-        channel_name, channel_url = channels[message_number]
-        response = f"Channel Name: {channel_name}\nChannel URL: {channel_url}"
-        send_message(response, sender_id, interface)
-
-        update_user_state(sender_id, None)
-
-    except ValueError:
-        send_message("Invalid input. Please enter a valid channel number.", sender_id, interface)
-    except Exception as e:
-        logging.error(f"Error processing read channel command: {e}")
-        send_message("Error processing read channel command.", sender_id, interface)
 
 
 def handle_quick_help_command(sender_id, interface):

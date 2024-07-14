@@ -11,6 +11,7 @@ from command_handlers import (
     handle_post_channel_command, handle_list_channels_command, handle_quick_help_command
 )
 from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection, add_channel
+from js8call_integration import handle_js8call_command, handle_js8call_steps, handle_group_message_selection
 from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message
 
 main_menu_handlers = {
@@ -24,6 +25,7 @@ bbs_menu_handlers = {
     "m": handle_mail_command,
     "b": handle_bulletin_command,
     "c": handle_channel_directory_command,
+    "j": handle_js8call_command,
     "x": handle_help_command
 }
 
@@ -107,6 +109,12 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                 handlers = bulletin_menu_handlers
             elif state and state['command'] == 'BULLETIN_ACTION':
                 handlers = board_action_handlers
+            elif state and state['command'] == 'JS8CALL_MENU':
+                handle_js8call_steps(sender_id, message, state['step'], interface, state)
+                return
+            elif state and state['command'] == 'GROUP_MESSAGES':
+                handle_group_message_selection(sender_id, message, state['step'], state, interface)
+                return
             else:
                 handlers = main_menu_handlers
 
@@ -152,9 +160,12 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                     handle_bb_steps(sender_id, message, 5, state, interface, bbs_nodes)
                 elif command == 'BULLETIN_READ':
                     handle_bb_steps(sender_id, message, 3, state, interface, bbs_nodes)
+                elif command == 'JS8CALL_MENU':
+                    handle_js8call_steps(sender_id, message, step, interface, state)
+                elif command == 'GROUP_MESSAGES':
+                    handle_group_message_selection(sender_id, message, step, state, interface)
             else:
                 handle_help_command(sender_id, interface)
-
 
 def on_receive(packet, interface):
     try:

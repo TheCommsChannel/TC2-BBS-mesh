@@ -1,5 +1,6 @@
 __pycache__/
 bulletins.db
+js8call.db
 venv/
 .venv
 .idea
