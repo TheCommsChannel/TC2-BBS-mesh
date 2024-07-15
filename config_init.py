@@ -80,9 +80,11 @@ def merge_config(system_config:dict[str, Any], args:argparse.Namespace) -> dict[
     
     return system_config
 
-def initialize_config(config_file:str = None) -> dict[str, Any]:
-    """Function reads and parses system configuration file
-    
+
+def initialize_config(config_file: str = None) -> dict[str, Any]:
+    """
+    Function reads and parses system configuration file
+
     Returns a dict with the following entries:
     config - parsed config file
     interface_type - type of the active interface
@@ -97,24 +99,42 @@ def initialize_config(config_file:str = None) -> dict[str, Any]:
         dict: dict with system configuration, ad described above
     """
     config = configparser.ConfigParser()
-    
+
     if config_file is None:
         config_file = "config.ini"
     config.read(config_file)
 
     interface_type = config['interface']['type']
     hostname = config['interface'].get('hostname', None)
-    port = config['interface'].get('port', None) 
+    port = config['interface'].get('port', None)
 
     bbs_nodes = config.get('sync', 'bbs_nodes', fallback='').split(',')
     if bbs_nodes == ['']:
         bbs_nodes = []
 
-    return {'config':config, 'interface_type': interface_type, 'hostname': hostname, 'port': port, 'bbs_nodes': bbs_nodes, 'mqtt_topic': 'meshtastic.receive'}
+    print(f"Configured to sync with the following BBS nodes: {bbs_nodes}")
+
+    allowed_nodes = config.get('allow_list', 'allowed_nodes', fallback='').split(',')
+    if allowed_nodes == ['']:
+        allowed_nodes = []
+
+    print(f"Nodes with Urgent board permissions: {allowed_nodes}")
+
+    return {
+        'config': config,
+        'interface_type': interface_type,
+        'hostname': hostname,
+        'port': port,
+        'bbs_nodes': bbs_nodes,
+        'allowed_nodes': allowed_nodes,
+        'mqtt_topic': 'meshtastic.receive'
+    }
+
 
 
 def get_interface(system_config:dict[str, Any]) -> meshtastic.stream_interface.StreamInterface:
-    """Function opens and returns an instance meshtastic interface of type specified by the configuration
+    """
+    Function opens and returns an instance meshtastic interface of type specified by the configuration
     
     Function creates and returns an instance of a class inheriting from meshtastic.stream_interface.StreamInterface.
     The type of the class depends on the type of the interface specified by the system configuration.

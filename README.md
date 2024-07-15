@@ -54,7 +54,15 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
    pip install -r requirements.txt
    ```
 
-5. Set up the configuration in `config.ini`:  
+5. Rename `example_config.ini`:
+
+   ```sh
+   mv example_config.ini config.ini
+   ```
+
+6. Set up the configuration in `config.ini`:  
+
+   You'll need to open up the config.ini file in a text editor and make your changes following the instructions below
    
    **[interface]**  
    If using `type = serial` and you have multiple devices connected, you will need to uncomment the `port =` line and enter the port of your device.   
@@ -159,7 +167,7 @@ If you would like to have the script automatically run at boot, follow the steps
    sudo systemctl start mesh-bbs.service
    ```
    
-   The service should be started now and should start anytime your device is powered on or rebooted. You can check the status ofk the service by running the following command:
+   The service should be started now and should start anytime your device is powered on or rebooted. You can check the status of the service by running the following command:
    
    ```sh
    sudo systemctl status mesh-bbs.service
@@ -171,14 +179,18 @@ If you would like to have the script automatically run at boot, follow the steps
    sudo systemctl stop mesh-bbs.service
    ```
    
-   If you make changes to the watchlist.txt file, you will need to restart the service with the following command:
+   If you need to restart the service, you can do so with the following command:
    
    ```sh
    sudo systemctl restart mesh-bbs.service
    ```
 ## Radio Configuration
 
-Note: Radio device role must be set to **CLIENT**, other roles may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests
+Note: There have been reports of issues with some device roles that may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests. 
+
+The following device roles have been working: 
+- **Client**
+- **Router_Client**
 
 ## Features
 

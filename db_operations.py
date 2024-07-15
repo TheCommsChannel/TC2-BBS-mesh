@@ -4,11 +4,13 @@ import threading
 import uuid
 from datetime import datetime
 
+from meshtastic import BROADCAST_NUM
+
 from utils import (
     send_bulletin_to_bbs_nodes,
     send_delete_bulletin_to_bbs_nodes,
     send_delete_mail_to_bbs_nodes,
-    send_mail_to_bbs_nodes, send_message
+    send_mail_to_bbs_nodes, send_message, send_channel_to_bbs_nodes
 )
 
 
@@ -49,11 +51,15 @@ def initialize_database():
     conn.commit()
     print("Database schema initialized.")
 
-def add_channel(name, url):
+def add_channel(name, url, bbs_nodes=None, interface=None):
     conn = get_db_connection()
     c = conn.cursor()
     c.execute("INSERT INTO channels (name, url) VALUES (?, ?)", (name, url))
     conn.commit()
+
+    if bbs_nodes and interface:
+        send_channel_to_bbs_nodes(name, url, bbs_nodes, interface)
+
 
 def get_channels():
     conn = get_db_connection()
@@ -78,11 +84,11 @@ def add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interfac
 
     # New logic to send group chat notification for urgent bulletins
     if board.lower() == "urgent":
-        group_chat_id = 4294967295  # Default group chat ID (0xFFFFFFFF)
         notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}"
-        send_message(notification_message, group_chat_id, interface)
+        send_message(notification_message, BROADCAST_NUM, interface)
 
     return unique_id
+
 
 def get_bulletins(board):
     conn = get_db_connection()
@@ -131,17 +137,16 @@ def get_mail_content(mail_id, recipient_id):
     return c.fetchone()
 
 def delete_mail(unique_id, recipient_id, bbs_nodes, interface):
-    # TODO: ensure only recipient can delete mail
-    logging.info(f"Attempting to delete mail with unique_id: {unique_id} by {recipient_id}")
     conn = get_db_connection()
     c = conn.cursor()
     try:
-        c.execute("SELECT unique_id FROM mail WHERE unique_id = ? and recipient = ?", (unique_id, recipient_id,))
+        c.execute("SELECT recipient FROM mail WHERE unique_id = ?", (unique_id,))
         result = c.fetchone()
-        logging.debug(f"Fetch result for unique_id {unique_id}: {result}")
         if result is None:
             logging.error(f"No mail found with unique_id: {unique_id}")
             return  # Early exit if no matching mail found
+        recipient_id = result[0]
+        logging.info(f"Attempting to delete mail with unique_id: {unique_id} by {recipient_id}")
         c.execute("DELETE FROM mail WHERE unique_id = ? and recipient = ?", (unique_id, recipient_id,))
         conn.commit()
         send_delete_mail_to_bbs_nodes(unique_id, bbs_nodes, interface)
@@ -149,3 +154,13 @@ def delete_mail(unique_id, recipient_id, bbs_nodes, interface):
     except Exception as e:
         logging.error(f"Error deleting mail with unique_id {unique_id}: {e}")
         raise
+
+
+def get_sender_id_by_mail_id(mail_id):
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute("SELECT sender FROM mail WHERE id = ?", (mail_id,))
+    result = c.fetchone()
+    if result:
+        return result[0]
+    return None

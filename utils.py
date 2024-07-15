@@ -28,7 +28,7 @@ def send_message(message, destination, interface):
 def get_node_info(interface, short_name):
     nodes = [{'num': node_id, 'shortName': node['user']['shortName'], 'longName': node['user']['longName']}
              for node_id, node in interface.nodes.items()
-             if node['user']['shortName'] == short_name]
+             if node['user']['shortName'].lower() == short_name]
     return nodes
 
 
@@ -69,5 +69,11 @@ def send_delete_bulletin_to_bbs_nodes(bulletin_id, bbs_nodes, interface):
 def send_delete_mail_to_bbs_nodes(unique_id, bbs_nodes, interface):
     message = f"DELETE_MAIL|{unique_id}"
     logging.info(f"SERVER SYNC: Sending delete mail sync message with unique_id: {unique_id}")
+    for node_id in bbs_nodes:
+        send_message(message, node_id, interface)
+
+
+def send_channel_to_bbs_nodes(name, url, bbs_nodes, interface):
+    message = f"CHANNEL|{name}|{url}"
     for node_id in bbs_nodes:
         send_message(message, node_id, interface)
