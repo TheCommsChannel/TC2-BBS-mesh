@@ -28,6 +28,8 @@ class JS8CallClient:
     def __init__(self, interface, logger=None):
         self.logger = logger or logging.getLogger('js8call')
         self.logger.setLevel(logging.INFO)
+        self.logger.propagate = False
+
         self.config = configparser.ConfigParser()
         self.config.read(config_file)
 
@@ -98,7 +100,6 @@ class JS8CallClient:
                     INSERT INTO messages (sender, receiver, message)
                     VALUES (?, ?, ?)
                 ''', (sender, receiver, message))
-            self.logger.info(f"Message inserted: {sender} to {receiver} - {message}")
         except sqlite3.Error as e:
             self.logger.error(f"Failed to insert message into database: {e}")
 
@@ -127,7 +128,6 @@ class JS8CallClient:
                     INSERT INTO urgent (sender, groupname, message)
                     VALUES (?, ?, ?)
                 ''', (sender, groupname, message))
-            self.logger.info(f"Urgent message inserted: {sender} to {groupname} - {message}")
         except sqlite3.Error as e:
             self.logger.error(f"Failed to insert urgent message into database: {e}")
 
