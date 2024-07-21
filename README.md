@@ -220,7 +220,7 @@ Big thanks to [Meshtastic](https://github.com/meshtastic) and [pdxlocations](htt
 
 [pdxlocations/Meshtastic-Python-Examples (github.com)](https://github.com/pdxlocations/Meshtastic-Python-Examples)
 
-**JS8Call**
+**JS8Call:**
 
 For the JS8Call side of things, big thanks to Jordan Sherer for JS8Call and the [example API Python script](https://bitbucket.org/widefido/js8call/src/js8call/tcp.py)
 
