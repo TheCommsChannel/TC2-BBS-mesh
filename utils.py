@@ -16,12 +16,18 @@ def send_message(message, destination, interface):
     max_payload_size = 200
     for i in range(0, len(message), max_payload_size):
         chunk = message[i:i + max_payload_size]
-        interface.sendText(
-            text=chunk,
-            destinationId=destination,
-            wantAck=False,
-            wantResponse=False
-        )
+        try:
+            d = interface.sendText(
+                text=chunk,
+                destinationId=destination,
+                wantAck=False,
+                wantResponse=False
+            )
+            logging.info(f"REPLY SEND ID={d.id}")
+        except Exception as e:
+            logging.info(f"REPLY SEND ERROR {e.message}")
+
+        
         time.sleep(2)
 
 
