@@ -111,8 +111,12 @@ def handle_fortune_command(sender_id, interface):
 
 
 def handle_stats_steps(sender_id, message, step, interface):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'x':
             handle_help_command(sender_id, interface)
             return
@@ -153,7 +157,6 @@ def handle_stats_steps(sender_id, message, step, interface):
             response = "Roles:\n" + "\n".join([f"{role}: {count}" for role, count in roles.items()])
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
-
 
 
 def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
@@ -225,8 +228,12 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
 
 
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'r':
             sender_node_id = get_node_id_from_num(sender_id, interface)
             mail = get_mail(sender_node_id)
@@ -353,8 +360,12 @@ def handle_channel_directory_command(sender_id, interface):
 
 
 def handle_channel_directory_steps(sender_id, message, step, state, interface):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'x':
             handle_help_command(sender_id, interface)
             return
@@ -473,7 +484,10 @@ def handle_read_mail_command(sender_id, message, state, interface):
 
 def handle_delete_mail_confirmation(sender_id, message, state, interface, bbs_nodes):
     try:
-        choice = message.lower()
+        choice = message.lower().strip()
+        if len(choice) == 2 and choice[1] == 'x':
+            choice = choice[0]
+
         if choice == 'd':
             unique_id = state['unique_id']
             sender_node_id = get_node_id_from_num(sender_id, interface)
@@ -491,6 +505,7 @@ def handle_delete_mail_confirmation(sender_id, message, state, interface, bbs_no
     except Exception as e:
         logging.error(f"Error processing delete mail confirmation: {e}")
         send_message("Error processing delete mail confirmation.", sender_id, interface)
+
 
 
 def handle_post_bulletin_command(sender_id, message, interface, bbs_nodes):

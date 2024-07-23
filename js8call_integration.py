@@ -214,15 +214,19 @@ class JS8CallClient:
         self.connected = False
 
 
-
 def handle_js8call_command(sender_id, interface):
     response = "JS8Call Menu:\n[G]roup Messages\n[S]tation Messages\n[U]rgent Messages\nE[X]IT"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'JS8CALL_MENU', 'step': 1})
 
+
 def handle_js8call_steps(sender_id, message, step, interface, state):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'x':
             handle_help_command(sender_id, interface, 'bbs')
             return
@@ -235,6 +239,8 @@ def handle_js8call_steps(sender_id, message, step, interface, state):
         else:
             send_message("Invalid option. Please choose again.", sender_id, interface)
             handle_js8call_command(sender_id, interface)
+
+
 
 def handle_group_messages_command(sender_id, interface):
     conn = sqlite3.connect('js8call.db')
