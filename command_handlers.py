@@ -461,8 +461,8 @@ def handle_read_mail_command(sender_id, message, state, interface):
         sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
         response = f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n\n{content}"
         send_message(response, sender_id, interface)
-        send_message("Would you like to delete this message now that you've read it? Y/N", sender_id, interface)
-        update_user_state(sender_id, {'command': 'CHECK_MAIL', 'step': 2, 'mail_id': mail_id, 'unique_id': unique_id})
+        send_message("What would you like to do with this message?\n[K]eep  [D]elete  [R]eply", sender_id, interface)
+        update_user_state(sender_id, {'command': 'CHECK_MAIL', 'step': 2, 'mail_id': mail_id, 'unique_id': unique_id, 'sender': sender, 'subject': subject, 'content': content})
 
     except ValueError:
         send_message("Invalid input. Please enter a valid message number.", sender_id, interface)
@@ -474,15 +474,19 @@ def handle_read_mail_command(sender_id, message, state, interface):
 def handle_delete_mail_confirmation(sender_id, message, state, interface, bbs_nodes):
     try:
         choice = message.lower()
-        if choice == 'y':
+        if choice == 'd':
             unique_id = state['unique_id']
             sender_node_id = get_node_id_from_num(sender_id, interface)
             delete_mail(unique_id, sender_node_id, bbs_nodes, interface)
             send_message("The message has been deleted 🗑️", sender_id, interface)
+            update_user_state(sender_id, None)
+        elif choice == 'r':
+            sender = state['sender']
+            send_message(f"Send your reply to {sender} now, followed by a message with END", sender_id, interface)
+            update_user_state(sender_id, {'command': 'MAIL', 'step': 7, 'reply_to_mail_id': state['mail_id'], 'subject': f"Re: {state['subject']}", 'content': ''})
         else:
             send_message("The message has been kept in your inbox.✉️", sender_id, interface)
-
-        update_user_state(sender_id, None)
+            update_user_state(sender_id, None)
 
     except Exception as e:
         logging.error(f"Error processing delete mail confirmation: {e}")
