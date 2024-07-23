@@ -1,3 +1,4 @@
+import configparser
 import logging
 import random
 import time
@@ -16,17 +17,51 @@ from utils import (
     update_user_state
 )
 
+# Read the configuration for menu options
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+main_menu_items = config['menu']['main_menu_items'].split(',')
+bbs_menu_items = config['menu']['bbs_menu_items'].split(',')
+utilities_menu_items = config['menu']['utilities_menu_items'].split(',')
+
+
+def build_menu(items, menu_name):
+    menu_str = f"{menu_name}\n"
+    for item in items:
+        if item.strip() == 'Q':
+            menu_str += "[Q]uick Commands\n"
+        elif item.strip() == 'B':
+            menu_str += "[B]BS\n"
+        elif item.strip() == 'U':
+            menu_str += "[U]tilities\n"
+        elif item.strip() == 'X':
+            menu_str += "E[X]IT\n"
+        elif item.strip() == 'M':
+            menu_str += "[M]ail\n"
+        elif item.strip() == 'C':
+            menu_str += "[C]hannel Dir\n"
+        elif item.strip() == 'J':
+            menu_str += "[J]S8CALL\n"
+        elif item.strip() == 'S':
+            menu_str += "[S]tats\n"
+        elif item.strip() == 'F':
+            menu_str += "[F]ortune\n"
+        elif item.strip() == 'W':
+            menu_str += "[W]all of Shame\n"
+    return menu_str
+
 
 def handle_help_command(sender_id, interface, menu_name=None):
     if menu_name:
         update_user_state(sender_id, {'command': 'MENU', 'menu': menu_name, 'step': 1})
         if menu_name == 'bbs':
-            response = "📰BBS Menu📰\n[M]ail\n[B]ulletins\n[C]hannel Dir\n[J]S8CALL\nE[X]IT"
+            response = build_menu(bbs_menu_items, "📰BBS Menu📰")
         elif menu_name == 'utilities':
-            response = "🛠️Utilities Menu🛠️\n[S]tats\n[F]ortune\n[W]all of Shame\nE[X]IT"
+            response = build_menu(utilities_menu_items, "🛠️Utilities Menu🛠️")
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
-        response = "💾TC² BBS💾\n[Q]uick Commands\n[B]BS\n[U]tilities\nE[X]IT"
+        response = build_menu(main_menu_items, "💾TC² BBS💾")
     send_message(response, sender_id, interface)
 
 
