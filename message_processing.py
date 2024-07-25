@@ -55,8 +55,12 @@ board_action_handlers = {
 
 def process_message(sender_id, message, interface, is_sync_message=False):
     state = get_user_state(sender_id)
-    message_lower = message.lower()
+    message_lower = message.lower().strip()
     bbs_nodes = interface.bbs_nodes
+
+    # Handle repeated characters for single character commands using a prefix
+    if len(message_lower) == 2 and message_lower[1] == 'x':
+        message_lower = message_lower[0]
 
     if is_sync_message:
         if message.startswith("BULLETIN|"):
@@ -164,10 +168,9 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                     handle_js8call_steps(sender_id, message, step, interface, state)
                 elif command == 'GROUP_MESSAGES':
                     handle_group_message_selection(sender_id, message, step, state, interface)
-                else:
-                    handle_help_command(sender_id, interface)
             else:
                 handle_help_command(sender_id, interface)
+
 
 def on_receive(packet, interface):
     try:

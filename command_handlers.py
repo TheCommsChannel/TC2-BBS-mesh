@@ -1,3 +1,4 @@
+import configparser
 import logging
 import random
 import time
@@ -16,17 +17,51 @@ from utils import (
     update_user_state
 )
 
+# Read the configuration for menu options
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+main_menu_items = config['menu']['main_menu_items'].split(',')
+bbs_menu_items = config['menu']['bbs_menu_items'].split(',')
+utilities_menu_items = config['menu']['utilities_menu_items'].split(',')
+
+
+def build_menu(items, menu_name):
+    menu_str = f"{menu_name}\n"
+    for item in items:
+        if item.strip() == 'Q':
+            menu_str += "[Q]uick Commands\n"
+        elif item.strip() == 'B':
+            menu_str += "[B]BS\n"
+        elif item.strip() == 'U':
+            menu_str += "[U]tilities\n"
+        elif item.strip() == 'X':
+            menu_str += "E[X]IT\n"
+        elif item.strip() == 'M':
+            menu_str += "[M]ail\n"
+        elif item.strip() == 'C':
+            menu_str += "[C]hannel Dir\n"
+        elif item.strip() == 'J':
+            menu_str += "[J]S8CALL\n"
+        elif item.strip() == 'S':
+            menu_str += "[S]tats\n"
+        elif item.strip() == 'F':
+            menu_str += "[F]ortune\n"
+        elif item.strip() == 'W':
+            menu_str += "[W]all of Shame\n"
+    return menu_str
+
 
 def handle_help_command(sender_id, interface, menu_name=None):
     if menu_name:
         update_user_state(sender_id, {'command': 'MENU', 'menu': menu_name, 'step': 1})
         if menu_name == 'bbs':
-            response = "📰BBS Menu📰\n[M]ail\n[B]ulletins\n[C]hannel Dir\n[J]S8CALL\nE[X]IT"
+            response = build_menu(bbs_menu_items, "📰BBS Menu📰")
         elif menu_name == 'utilities':
-            response = "🛠️Utilities Menu🛠️\n[S]tats\n[F]ortune\n[W]all of Shame\nE[X]IT"
+            response = build_menu(utilities_menu_items, "🛠️Utilities Menu🛠️")
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
-        response = "💾TC² BBS💾\n[Q]uick Commands\n[B]BS\n[U]tilities\nE[X]IT"
+        response = build_menu(main_menu_items, "💾TC² BBS💾")
     send_message(response, sender_id, interface)
 
 
@@ -76,8 +111,12 @@ def handle_fortune_command(sender_id, interface):
 
 
 def handle_stats_steps(sender_id, message, step, interface):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'x':
             handle_help_command(sender_id, interface)
             return
@@ -118,7 +157,6 @@ def handle_stats_steps(sender_id, message, step, interface):
             response = "Roles:\n" + "\n".join([f"{role}: {count}" for role, count in roles.items()])
             send_message(response, sender_id, interface)
             handle_stats_command(sender_id, interface)
-
 
 
 def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
@@ -190,8 +228,12 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
 
 
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'r':
             sender_node_id = get_node_id_from_num(sender_id, interface)
             mail = get_mail(sender_node_id)
@@ -318,8 +360,12 @@ def handle_channel_directory_command(sender_id, interface):
 
 
 def handle_channel_directory_steps(sender_id, message, step, state, interface):
+    message = message.lower().strip()
+    if len(message) == 2 and message[1] == 'x':
+        message = message[0]
+
     if step == 1:
-        choice = message.lower()
+        choice = message
         if choice == 'x':
             handle_help_command(sender_id, interface)
             return
@@ -426,8 +472,8 @@ def handle_read_mail_command(sender_id, message, state, interface):
         sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
         response = f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n\n{content}"
         send_message(response, sender_id, interface)
-        send_message("Would you like to delete this message now that you've read it? Y/N", sender_id, interface)
-        update_user_state(sender_id, {'command': 'CHECK_MAIL', 'step': 2, 'mail_id': mail_id, 'unique_id': unique_id})
+        send_message("What would you like to do with this message?\n[K]eep  [D]elete  [R]eply", sender_id, interface)
+        update_user_state(sender_id, {'command': 'CHECK_MAIL', 'step': 2, 'mail_id': mail_id, 'unique_id': unique_id, 'sender': sender, 'subject': subject, 'content': content})
 
     except ValueError:
         send_message("Invalid input. Please enter a valid message number.", sender_id, interface)
@@ -438,20 +484,28 @@ def handle_read_mail_command(sender_id, message, state, interface):
 
 def handle_delete_mail_confirmation(sender_id, message, state, interface, bbs_nodes):
     try:
-        choice = message.lower()
-        if choice == 'y':
+        choice = message.lower().strip()
+        if len(choice) == 2 and choice[1] == 'x':
+            choice = choice[0]
+
+        if choice == 'd':
             unique_id = state['unique_id']
             sender_node_id = get_node_id_from_num(sender_id, interface)
             delete_mail(unique_id, sender_node_id, bbs_nodes, interface)
             send_message("The message has been deleted 🗑️", sender_id, interface)
+            update_user_state(sender_id, None)
+        elif choice == 'r':
+            sender = state['sender']
+            send_message(f"Send your reply to {sender} now, followed by a message with END", sender_id, interface)
+            update_user_state(sender_id, {'command': 'MAIL', 'step': 7, 'reply_to_mail_id': state['mail_id'], 'subject': f"Re: {state['subject']}", 'content': ''})
         else:
             send_message("The message has been kept in your inbox.✉️", sender_id, interface)
-
-        update_user_state(sender_id, None)
+            update_user_state(sender_id, None)
 
     except Exception as e:
         logging.error(f"Error processing delete mail confirmation: {e}")
         send_message("Error processing delete mail confirmation.", sender_id, interface)
+
 
 
 def handle_post_bulletin_command(sender_id, message, interface, bbs_nodes):
