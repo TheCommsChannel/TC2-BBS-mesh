@@ -168,6 +168,8 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                     handle_js8call_steps(sender_id, message, step, interface, state)
                 elif command == 'GROUP_MESSAGES':
                     handle_group_message_selection(sender_id, message, step, state, interface)
+                else:
+                    handle_help_command(sender_id, interface)
             else:
                 handle_help_command(sender_id, interface)
 
