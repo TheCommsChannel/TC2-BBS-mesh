@@ -18,6 +18,14 @@ If you're a Docker user, TC²-BBS Meshtastic is available on Docker Hub!
 - Meshtastic
 - pypubsub
 
+### Update and Install Git
+   
+   ```sh
+   sudo apt update
+   sudo apt upgrade
+   sudo apt install git
+   ```
+
 ### Installation
 
 1. Clone the repository:
