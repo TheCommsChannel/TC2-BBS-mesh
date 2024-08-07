@@ -192,6 +192,19 @@ If you would like to have the script automatically run at boot, follow the steps
    ```sh
    sudo systemctl restart mesh-bbs.service
    ```
+
+2. **Viewing Logs**
+
+   Viewing past logs:
+   ```sh
+   journalctl -u mesh-bbs.service
+   ```
+
+   Viewing live logs:
+   ```sh
+   journalctl -u mesh-bbs.service -f
+   ```
+
 ## Radio Configuration
 
 Note: There have been reports of issues with some device roles that may allow the BBS to communicate for a short time, but then the BBS will stop responding to requests. 
