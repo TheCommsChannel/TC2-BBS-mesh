@@ -228,12 +228,12 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
 
 
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
-    message = message.lower().strip()
+    message = message.strip()
     if len(message) == 2 and message[1] == 'x':
         message = message[0]
 
     if step == 1:
-        choice = message
+        choice = message.lower()
         if choice == 'r':
             sender_node_id = get_node_id_from_num(sender_id, interface)
             mail = get_mail(sender_node_id)
@@ -360,16 +360,16 @@ def handle_channel_directory_command(sender_id, interface):
 
 
 def handle_channel_directory_steps(sender_id, message, step, state, interface):
-    message = message.lower().strip()
+    message = message.strip()
     if len(message) == 2 and message[1] == 'x':
         message = message[0]
 
     if step == 1:
         choice = message
-        if choice == 'x':
+        if choice.lower() == 'x':
             handle_help_command(sender_id, interface)
             return
-        elif choice == 'v':
+        elif choice.lower() == 'v':
             channels = get_channels()
             if channels:
                 response = "Select a channel number to view:\n" + "\n".join(
@@ -379,7 +379,7 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
             else:
                 send_message("No channels available in the directory.", sender_id, interface)
                 handle_channel_directory_command(sender_id, interface)
-        elif choice == 'p':
+        elif choice.lower == 'p':
             send_message("Name your channel for the directory:", sender_id, interface)
             update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 3})
 

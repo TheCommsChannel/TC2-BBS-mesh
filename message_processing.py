@@ -56,6 +56,8 @@ board_action_handlers = {
 def process_message(sender_id, message, interface, is_sync_message=False):
     state = get_user_state(sender_id)
     message_lower = message.lower().strip()
+    message_strip = message.strip()
+
     bbs_nodes = interface.bbs_nodes
 
     # Handle repeated characters for single character commands using a prefix
@@ -89,15 +91,15 @@ def process_message(sender_id, message, interface, is_sync_message=False):
             add_channel(channel_name, channel_url)
     else:
         if message_lower.startswith("sm,,"):
-            handle_send_mail_command(sender_id, message_lower, interface, bbs_nodes)
+            handle_send_mail_command(sender_id, message_strip, interface, bbs_nodes)
         elif message_lower.startswith("cm"):
             handle_check_mail_command(sender_id, interface)
         elif message_lower.startswith("pb,,"):
-            handle_post_bulletin_command(sender_id, message_lower, interface, bbs_nodes)
+            handle_post_bulletin_command(sender_id, message_strip, interface, bbs_nodes)
         elif message_lower.startswith("cb,,"):
-            handle_check_bulletin_command(sender_id, message_lower, interface)
+            handle_check_bulletin_command(sender_id, message_strip, interface)
         elif message_lower.startswith("chp,,"):
-            handle_post_channel_command(sender_id, message_lower, interface)
+            handle_post_channel_command(sender_id, message_strip, interface)
         elif message_lower.startswith("chl"):
             handle_list_channels_command(sender_id, interface)
         else:
