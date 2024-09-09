@@ -352,7 +352,7 @@ def handle_wall_of_shame_command(sender_id, interface):
 
 
 def handle_channel_directory_command(sender_id, interface):
-    response = "📚CHANNEL DIRECTORY📚\nWhat would you like to do?\n[V]iew  [P]ost  E[X]IT"
+    response = "📚CHANNEL DIRECTORY📚\nWhat would you like to do?\n[V]iew  \n[P]ost \n[R]emove \nE[X]IT"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 1})
 
@@ -380,6 +380,16 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
         elif choice == 'p':
             send_message("Name your channel for the directory:", sender_id, interface)
             update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 3})
+        elif choice == 'r':
+            channels = get_channels()
+            if channels:
+                response = "Select a channel number to remove:\n" + "\n".join(
+                    [f"[{i}] {channel[0]}" for i, channel in enumerate(channels)])
+                send_message(response, sender_id, interface)
+                update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 5})
+            else:
+                send_message("No channels available in the directory.", sender_id, interface)
+                handle_channel_directory_command(sender_id, interface
 
     elif step == 2:
         channel_index = int(message)
@@ -399,6 +409,15 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
         channel_name = state['channel_name']
         add_channel(channel_name, channel_url)
         send_message(f"Your channel '{channel_name}' has been added to the directory.", sender_id, interface)
+        handle_channel_directory_command(sender_id, interface)
+
+    elif step == 5:
+        channel_index = int(message)
+        channels = get_channels()
+        if 0 <= channel_index < len(channels):
+            channel_name, _ = channels[channel_index]
+            remove_channel(channel_index)
+            send_message(f"Channel '{channel_name}' has been removed from the directory.", sender_id, interface)
         handle_channel_directory_command(sender_id, interface)
 
 
