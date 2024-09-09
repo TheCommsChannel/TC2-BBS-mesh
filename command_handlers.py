@@ -389,7 +389,7 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
                 update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 5})
             else:
                 send_message("No channels available in the directory.", sender_id, interface)
-                handle_channel_directory_command(sender_id, interface
+                handle_channel_directory_command(sender_id, interface)
 
     elif step == 2:
         channel_index = int(message)
