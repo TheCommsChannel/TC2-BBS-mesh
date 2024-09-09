@@ -229,9 +229,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
 
 def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
     message = message.lower().strip()
-    if len(message) == 2 and message[1] == 'x':
-        message = message[0]
-
+    
     if step == 1:
         choice = message
         if choice == 'r':
@@ -252,17 +250,17 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             handle_help_command(sender_id, interface)
 
     elif step == 2:
-        mail_id = int(message)
         try:
+            mail_id = int(message)
             sender_node_id = get_node_id_from_num(sender_id, interface)
             sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
             send_message(f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n{content}", sender_id, interface)
             send_message("What would you like to do with this message?\n[K]eep  [D]elete  [R]eply", sender_id, interface)
             update_user_state(sender_id, {'command': 'MAIL', 'step': 4, 'mail_id': mail_id, 'unique_id': unique_id, 'sender': sender, 'subject': subject, 'content': content})
-        except TypeError:
-            logging.info(f"Node {sender_id} tried to access non-existent message")
-            send_message("Mail not found", sender_id, interface)
-            update_user_state(sender_id, None)
+        except ValueError:
+            send_message("Invalid input. Please enter a valid message number.", sender_id, interface)
+            # Optionally keep the user in the same state to try again
+            update_user_state(sender_id, {'command': 'MAIL', 'step': 2})
 
     elif step == 3:
         short_name = message.lower()
