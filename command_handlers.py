@@ -63,7 +63,9 @@ def handle_help_command(sender_id, interface, menu_name=None):
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
         response = build_menu(main_menu_items, "💾TC² BBS💾")
     send_message(response, sender_id, interface)
-
+    mail = get_mail(get_node_id_from_num(sender_id, interface))
+    if mail:
+        send_message(f"You have {len(mail)} mail messages.", sender_id, interface)
 
 def get_node_name(node_id, interface):
     node_info = interface.nodes.get(node_id)
