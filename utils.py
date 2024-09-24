@@ -23,7 +23,8 @@ def send_message(message, destination, interface):
                 wantAck=False,
                 wantResponse=False
             )
-            logging.info(f"REPLY SEND ID={d.id}")
+            destid = get_node_id_from_num(destination, interface)
+            logging.info(f"Sending message \"{chunk.replace("\n", "\\n")}\" to {destid} ({get_node_short_name(destid, interface)}). REPLY SEND ID={d.id}.")
         except Exception as e:
             logging.info(f"REPLY SEND ERROR {e.message}")
 
