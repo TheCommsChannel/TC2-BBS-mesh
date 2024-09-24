@@ -20,7 +20,7 @@ def send_message(message, destination, interface):
             d = interface.sendText(
                 text=chunk,
                 destinationId=destination,
-                wantAck=False, #should this be true?
+                wantAck=True,
                 wantResponse=False
             )
             destid = get_node_id_from_num(destination, interface)
