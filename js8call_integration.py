@@ -89,47 +89,46 @@ class JS8CallClient:
             ''')
         self.logger.info("Database tables created or verified.")
 
-    def insert_message(self, sender, receiver, message):
+    def insert_message(self, table, sender, recipient, message):
+        """
+        Inserts a message into the specified table in the database.
+
+        This method saves a message along with its sender and receiver or group name into the specified table.
+        If the database connection is not available, it logs an error message.
+
+        Parameters:
+        -----------
+        table : str
+            The name of the table where the message should be inserted. It can be 'messages', 'groups', or 'urgent'.
+        
+        sender : str
+            The meshtastic node identifier of the sender who issued the command
+        
+        recipient : str
+            The identifier of the receiver of the message or the group name.
+        
+        message : str
+            The content of the message.
+
+        Example Usage:
+        --------------
+        client.insert_message('messages', sender='CALLSIGN1', receiver_or_group='CALLSIGN2', message='This is a message.')
+        client.insert_message('groups', sender='CALLSIGN1', receiver_or_group='GroupName', message='This is a group message.')
+        client.insert_message('urgent', sender='CALLSIGN1', receiver_or_group='UrgentGroupName', message='This is an urgent message.')
+        """
+
         if not self.db_conn:
             self.logger.error("Database connection is not available.")
             return
 
         try:
             with self.db_conn:
-                self.db_conn.execute('''
-                    INSERT INTO messages (sender, receiver, message)
+                self.db_conn.execute(f'''
+                    INSERT INTO {table} (sender, { 'receiver' if table == 'messages' else 'groupname' }, message)
                     VALUES (?, ?, ?)
-                ''', (sender, receiver, message))
+                ''', (sender, receiver_or_group, message))
         except sqlite3.Error as e:
-            self.logger.error(f"Failed to insert message into database: {e}")
-
-    def insert_group(self, sender, groupname, message):
-        if not self.db_conn:
-            self.logger.error("Database connection is not available.")
-            return
-
-        try:
-            with self.db_conn:
-                self.db_conn.execute('''
-                    INSERT INTO groups (sender, groupname, message)
-                    VALUES (?, ?, ?)
-                ''', (sender, groupname, message))
-        except sqlite3.Error as e:
-            self.logger.error(f"Failed to insert group message into database: {e}")
-
-    def insert_urgent(self, sender, groupname, message):
-        if not self.db_conn:
-            self.logger.error("Database connection is not available.")
-            return
-
-        try:
-            with self.db_conn:
-                self.db_conn.execute('''
-                    INSERT INTO urgent (sender, groupname, message)
-                    VALUES (?, ?, ?)
-                ''', (sender, groupname, message))
-        except sqlite3.Error as e:
-            self.logger.error(f"Failed to insert urgent message into database: {e}")
+            self.logger.error(f"Failed to insert message into {table} table: {e}")
 
     def process(self, message):
         typ = message.get('type', '')
@@ -161,13 +160,13 @@ class JS8CallClient:
             self.logger.info(f"Received JS8Call message: {sender} to {receiver} - {msg}")
 
             if receiver in self.js8urgent:
-                self.insert_urgent(sender, receiver, msg)
+                self.insert_urgent('urgent', sender, receiver, msg)
                 notification_message = f"💥 URGENT JS8Call Message Received 💥\nFrom: {sender}\nCheck BBS for message"
                 send_message(notification_message, BROADCAST_NUM, self.interface)
             elif receiver in self.js8groups:
-                self.insert_group(sender, receiver, msg)
+                self.insert_message('groups', sender, receiver, msg)
             elif self.store_messages:
-                self.insert_message(sender, receiver, msg)
+                self.insert_message('messages', sender, receiver, msg)
         else:
             pass
 
