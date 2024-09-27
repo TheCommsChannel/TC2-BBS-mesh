@@ -24,7 +24,8 @@ def send_message(message, destination, interface):
                 wantResponse=False
             )
             destid = get_node_id_from_num(destination, interface)
-            logging.info(f"Sending message to user '{get_node_short_name(destid, interface)}' ({destid}) with sendID {d.id}: \"{chunk.replace('\n', '\\n')}\"")
+            chunk = chunk.replace('\n', '\\n')
+            logging.info(f"Sending message to user '{get_node_short_name(destid, interface)}' ({destid}) with sendID {d.id}: \"{chunk}\"")
         except Exception as e:
             logging.info(f"REPLY SEND ERROR {e.message}")
 
