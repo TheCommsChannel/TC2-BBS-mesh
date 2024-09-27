@@ -20,10 +20,12 @@ def send_message(message, destination, interface):
             d = interface.sendText(
                 text=chunk,
                 destinationId=destination,
-                wantAck=False,
+                wantAck=True,
                 wantResponse=False
             )
-            logging.info(f"REPLY SEND ID={d.id}")
+            destid = get_node_id_from_num(destination, interface)
+            chunk = chunk.replace('\n', '\\n')
+            logging.info(f"Sending message to user '{get_node_short_name(destid, interface)}' ({destid}) with sendID {d.id}: \"{chunk}\"")
         except Exception as e:
             logging.info(f"REPLY SEND ERROR {e.message}")
 

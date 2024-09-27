@@ -61,9 +61,9 @@ def handle_help_command(sender_id, interface, menu_name=None):
             response = build_menu(utilities_menu_items, "🛠️Utilities Menu🛠️")
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
-        response = build_menu(main_menu_items, "💾TC² BBS💾")
+        mail = get_mail(get_node_id_from_num(sender_id, interface))
+        response = build_menu(main_menu_items, f"💾TC² BBS💾 (✉️:{len(mail)})")
     send_message(response, sender_id, interface)
-
 
 def get_node_name(node_id, interface):
     node_info = interface.nodes.get(node_id)
@@ -80,7 +80,7 @@ def handle_mail_command(sender_id, interface):
 
 
 def handle_bulletin_command(sender_id, interface):
-    response = "📰Bulletin Menu📰\nWhich board would you like to enter?\n[G]eneral  [I]nfo  [N]ews  [U]rgent"
+    response = f"📰Bulletin Menu📰\nWhich board would you like to enter?\n[G]eneral  [I]nfo  [N]ews  [U]rgent"
     send_message(response, sender_id, interface)
     update_user_state(sender_id, {'command': 'BULLETIN_MENU', 'step': 1})
 
@@ -166,7 +166,8 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             handle_help_command(sender_id, interface, 'bbs')
             return
         board_name = boards[int(message)]
-        response = f"What would you like to do in the {board_name} board?\n[R]ead  [P]ost"
+        bulletins = get_bulletins(board_name)
+        response = f"{board_name} has {len(bulletins)} messages.\n[R]ead  [P]ost"
         send_message(response, sender_id, interface)
         update_user_state(sender_id, {'command': 'BULLETIN_ACTION', 'step': 2, 'board': board_name})
 
@@ -186,7 +187,7 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             if board_name.lower() == 'urgent':
                 node_id = get_node_id_from_num(sender_id, interface)
                 allowed_nodes = interface.allowed_nodes
-                print(f"Checking permissions for node_id: {node_id} with allowed_nodes: {allowed_nodes}")  # Debug statement
+                logging.info(f"Checking permissions for node_id: {node_id} with allowed_nodes: {allowed_nodes}")  # Debug statement
                 if allowed_nodes and node_id not in allowed_nodes:
                     send_message("You don't have permission to post to this board.", sender_id, interface)
                     handle_bb_steps(sender_id, 'e', 1, state, interface, bbs_nodes)
@@ -535,10 +536,13 @@ def handle_check_bulletin_command(sender_id, message, interface):
         # Split the message only once
         parts = message.split(",,", 1)
         if len(parts) != 2 or not parts[1].strip():
-            send_message("Check Bulletins Quick Command format:\nCB,,{board_name}", sender_id, interface)
+            send_message("Check Bulletins Quick Command format:\nCB,,board_name", sender_id, interface)
             return
 
-        board_name = parts[1].strip()
+        boards = {0: "General", 1: "Info", 2: "News", 3: "Urgent"} #list of boards
+        board_name = parts[1].strip().capitalize() #get board name from quick command and capitalize it
+        board_name = boards[next(key for key, value in boards.items() if value == board_name)] #search for board name in list
+
         bulletins = get_bulletins(board_name)
         if not bulletins:
             send_message(f"No bulletins available on {board_name} board.", sender_id, interface)
