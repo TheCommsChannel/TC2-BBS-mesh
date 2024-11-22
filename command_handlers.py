@@ -135,7 +135,7 @@ def handle_stats_steps(sender_id, message, step, interface):
                     total_nodes = len(interface.nodes)
                 else:
                     time_limit = current_time - seconds
-                    total_nodes = sum(1 for node in interface.nodes.values() if node.get('lastHeard', 0) >= time_limit)
+                    total_nodes = sum(1 for node in interface.nodes.values() if node.get('lastHeard') is not None and node['lastHeard'] >= time_limit)
                 total_nodes_summary.append(f"- {period}: {total_nodes}")
 
             response = "Total nodes seen:\n" + "\n".join(total_nodes_summary)
