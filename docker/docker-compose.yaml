@@ -3,5 +3,5 @@ services:
     build: .
     restart: always
     volumes:
-      - ./config:/config
+      - ./config:/home/mesh/bbs/config
     container_name: tc2-bbs-mesh
