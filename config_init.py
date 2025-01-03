@@ -76,7 +76,7 @@ def merge_config(system_config:dict[str, Any], args:argparse.Namespace) -> dict[
         system_config['port'] = args.port
         
     if args.host is not None:
-        system_config['host'] = args.host
+        system_config['hostname'] = args.host
     
     return system_config
 
