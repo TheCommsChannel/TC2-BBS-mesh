@@ -45,7 +45,7 @@ def display_banner():
    ██║   ██║     ██╔═══╝ ╚════╝██╔══██╗██╔══██╗╚════██║
    ██║   ╚██████╗███████╗      ██████╔╝██████╔╝███████║
    ╚═╝    ╚═════╝╚══════╝      ╚═════╝ ╚═════╝ ╚══════╝
-Meshtastic Version
+Meshtastic Version WITH GAMES
 """
     print(banner)
 

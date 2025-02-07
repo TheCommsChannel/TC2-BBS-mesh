@@ -1,0 +1,8 @@
+title="The Lost Forest"
+What is your first choice?, East, 2, West, 3, North, 4, South, 5
+You chose East. A dense forest appears., Run forward, 6, Look around, 7
+You chose West. A river blocks your path., Try to swim, 8, Walk along the bank, 9
+You chose North. The path is blocked by rocks.
+You chose South. A cave entrance looms ahead., Enter the cave, 10, Turn back, 11
+You went East and chose to run. The ground gives way and you fall. GAME OVER.
+You went East and looked around. You see a hidden path., Follow it, 12, Stay put, 13
