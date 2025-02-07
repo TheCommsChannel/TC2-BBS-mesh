@@ -701,37 +701,31 @@ def get_games_available(game_files):
 
 def handle_games_command(sender_id, interface):
     """Handles the Games Menu and lists available text-based games."""
-
-    # Find files in ./games that:
-    # - Have a .txt or .csv extension
-    # - OR have no extension
+    
     game_files = [
         f for f in os.listdir('./games') 
         if os.path.isfile(os.path.join('./games', f)) and (f.endswith('.txt') or f.endswith('.csv') or '.' not in f)
     ]
 
     games_available = get_games_available(game_files)
-
     if not games_available:
         send_message("No games available yet. Come back soon.", sender_id, interface)
         update_user_state(sender_id, {'command': 'UTILITIES', 'step': 1})
         return None
 
-    # Store game filenames in state to avoid title-related issues
     game_titles = list(games_available.keys())  # Display titles
     game_filenames = list(games_available.values())  # Actual filenames
-
-    # Include exit option
+    
     numbered_games = "\n".join(f"{i+1}. {title}" for i, title in enumerate(game_titles))
     numbered_games += "\n[X] Exit"
 
     response = f"🎮 Games Menu 🎮\nWhich game would you like to play?\n{numbered_games}"
     send_message(response, sender_id, interface)
 
+    # ✅ Ensure `games` state is always reset when displaying the menu
     update_user_state(sender_id, {'command': 'GAMES', 'step': 1, 'games': game_filenames, 'titles': game_titles})
 
     return response
-
 
 
 
@@ -750,6 +744,9 @@ def handle_game_menu_selection(sender_id, message, step, interface, state):
         if 0 <= game_index < len(games_available):
             selected_game = games_available[game_index]
 
+            # Reset user state to ensure a clean start
+            update_user_state(sender_id, None)
+
             # Update state to indicate the user is now in-game
             update_user_state(sender_id, {'command': 'IN_GAME', 'step': 3, 'game': selected_game})
 
@@ -760,6 +757,7 @@ def handle_game_menu_selection(sender_id, message, step, interface, state):
 
     except ValueError:
         send_message("Invalid input. Please enter a number corresponding to a game or 'X' to exit.", sender_id, interface)
+
 
 def start_selected_game(sender_id, interface, state):
     """Starts the game selected by the user and ensures title detection."""
@@ -844,24 +842,37 @@ def load_game_map(file_path):
         print(f"❌ ERROR inside load_game_map(): {e}")
         return None
 
-
 def present_story_segment(sender_id, interface, state):
     """Presents the current segment of the game and available choices."""
 
     game_name = state.get('game')
-    game_title = state.get('game_title', "Unknown Game")  # ✅ Prevent KeyError
+    game_title = state.get('game_title', "Unknown Game")
     game_map = state.get('game_map', {})
     game_position = state.get('game_position', 1)
 
     if game_position not in game_map:
         send_message("Error: Invalid game state.", sender_id, interface)
         update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
+        handle_games_command(sender_id, interface)
         return
 
     # Retrieve the current story segment
     segment = game_map[game_position]
     storyline = segment[0]
-    choices = segment[1:]
+    choices = segment[1:]  # Extract choices
+
+    # 🛠️ **Check if this is a game-over state (no choices)**
+    if not choices:
+        send_message(f"🎮 {game_title} 🎮\n\n{storyline}\n\n💀 GAME OVER! Returning to the game menu...", sender_id, interface)
+        
+        # Reset user state before returning to menu
+        update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
+        
+        import time
+        time.sleep(1)  # Ensure the message is processed before switching menus
+
+        handle_games_command(sender_id, interface)
+        return
 
     # Build response message
     response = f"🎮 {game_title} 🎮\n\n{storyline}\n\n"
@@ -872,15 +883,16 @@ def present_story_segment(sender_id, interface, state):
 
     send_message(response, sender_id, interface)
 
-    # Update user state to track the current game progress
+    # Ensure user state is properly tracked
     update_user_state(sender_id, {
         'command': 'IN_GAME',
         'step': 3,
         'game': game_name,
-        'game_title': game_title,  # ✅ Ensure it stays in state
+        'game_title': game_title,
         'game_map': game_map,
         'game_position': game_position
     })
+
 
 def process_game_choice(sender_id, message, interface, state):
     """Processes the player's choice and advances the game."""
@@ -891,65 +903,50 @@ def process_game_choice(sender_id, message, interface, state):
     if game_position not in game_map:
         send_message("Error: Invalid game state.", sender_id, interface)
         update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
+        handle_games_command(sender_id, interface)
         return
 
     segment = game_map[game_position]
 
     # Extract the storyline and choices
-    storyline = segment[0]  # First element is the story text
-    choices = segment[1:]  # Remaining elements are choices
+    storyline = segment[0]
+    choices = segment[1:]
 
-    # Ensure choices are properly formatted (must be in pairs)
+    # Ensure choices are properly formatted
     if len(choices) % 2 != 0:
         send_message("Error: Game data is corrupted.", sender_id, interface)
         update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
+        handle_games_command(sender_id, interface)
         return
 
     # Handle Exit
     if message.lower() == "x":
         send_message(f"Exiting '{state['game_title']}'... Returning to Games Menu.", sender_id, interface)
         update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
-        handle_games_command(sender_id, interface)  # Immediately display the game menu
+        handle_games_command(sender_id, interface)
         return
 
     try:
-        # Convert user input to index (1-based to 0-based)
         choice_index = int(message) - 1
 
-        # Validate choice selection
         if choice_index < 0 or choice_index * 2 + 1 >= len(choices):
             send_message("Invalid selection. Please enter a valid number.", sender_id, interface)
             return
 
-        # Retrieve the target position for the chosen option
         target_position = int(choices[choice_index * 2 + 1])
 
-        # Check if the target position exists
         if target_position not in game_map:
-            send_message("💀 Game Over! You fell into an abyss. 💀", sender_id, interface)
+            send_message("💀 GAME OVER! No further choices available. 💀 Returning to the game menu...", sender_id, interface)
             update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
-            handle_games_command(sender_id, interface)  # Return to game menu
+            handle_games_command(sender_id, interface)
             return
 
-        # Update state with the new game position
-        update_user_state(sender_id, {
-            'command': 'IN_GAME',
-            'step': 3,
-            'game': state['game'],
-            'game_title': state['game_title'],
-            'game_map': game_map,
-            'game_position': target_position
-        })
+        # ✅ FIX: Pass `state` instead of `update_user_state`
+        state['game_position'] = target_position
+        update_user_state(sender_id, state)
 
-        # Present the new story segment
-        present_story_segment(sender_id, interface, {
-            'command': 'IN_GAME',
-            'step': 3,
-            'game': state['game'],
-            'game_title': state['game_title'],
-            'game_map': game_map,
-            'game_position': target_position
-        })
+        # ✅ FIX: Pass the correct `state` variable, NOT `update_user_state`
+        present_story_segment(sender_id, interface, state) 
 
-    except (ValueError, IndexError):
-        send_message("Invalid selection. Please enter a valid number.", sender_id, interface)
+    except ValueError:
+        send_message("Invalid input. Please enter a valid number.", sender_id, interface)
