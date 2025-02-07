@@ -55,7 +55,7 @@ title="The Mysterious Forest"
 ---
 
 ## 📌 **Edge Cases & Notes**
-⚠ **If an invalid line number is referenced**, the game may crash.
+⚠ **If an invalid line number is referenced**, the game will crash by having the player fall into an abyss.
 ⚠ **A story segment must always be in column 1**, even if no choices follow.
 ⚠ **Extra spaces around text are automatically trimmed.**
 
