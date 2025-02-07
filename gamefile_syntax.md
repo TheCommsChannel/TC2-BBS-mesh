@@ -31,6 +31,8 @@ title="The Mysterious Forest"
 - If present, the game uses this as the **title**.
 - If absent, the **filename** is used as the title.
 - The second line will then be the **first story segment**.
+- If present, the game will consider the title line as line 0. 
+- Line 1 is always the first story segment.
 
 ---
 
@@ -63,4 +65,7 @@ title="The Mysterious Forest"
 
 ## 📌 **Final Notes**
 By following this format, you can create **interactive, branching text adventures** without modifying code! 🎮🚀
+Remember, if using a title in the first line you need to offset your line mapping by -1. It's easiest to write 
+the story and mapping first, then adding the title after you're done. If you forget to offset your line numbers, 
+a simple script to increment each choice number by -1 will fix it for you!
 

@@ -806,7 +806,6 @@ def start_selected_game(sender_id, interface, state):
     # Present the first segment
     present_story_segment(sender_id, interface, new_state)  # ✅ Pass updated state
 
-
 def load_game_map(file_path):
     """Loads a game map from a CSV file and returns its structured format."""
 
@@ -828,7 +827,7 @@ def load_game_map(file_path):
             game_title = first_line.split("=", 1)[1].strip().strip('"')
             game_lines = lines[1:]  # Skip title
         else:
-            game_title = file_path  # Use filename if no title
+            game_title = os.path.splitext(os.path.basename(file_path))[0]  # Use filename without path/extension
             game_lines = lines
 
         print(f"DEBUG: Game title detected -> {game_title}")
