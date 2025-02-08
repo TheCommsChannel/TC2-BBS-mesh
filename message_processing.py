@@ -104,14 +104,19 @@ def process_message(sender_id, message, interface, is_sync_message=False):
             channel_name, channel_url = parts[1], parts[2]
             add_channel(channel_name, channel_url)
     else:
-        # ✅ **Corrected IN_GAME Handling**
+        # ✅ **Fix: Ensure Games Menu Loads After Exiting a Game**
         if state and state['command'] == 'IN_GAME':
-            message_lower = message.lower().strip()
+            logging.debug(f"🎮 User {sender_id} is in-game, processing game command...")
 
-            # Always check if the user wants to exit
             if message_lower == "x":
+                logging.debug(f"❌ User {sender_id} exited the game. Sending exit message...")
                 send_message(f"Exiting '{state['game']}'... Returning to Games Menu.", sender_id, interface)
                 update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
+
+                logging.debug(f"🚀 Calling handle_games_command() for user {sender_id} after exit.")
+                handle_games_command(sender_id, interface)
+                logging.debug(f"✅ handle_games_command() execution completed for user {sender_id}!")
+
                 return
 
             # Otherwise, process the game choice
@@ -208,7 +213,6 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                     handle_help_command(sender_id, interface)
             else:
                 handle_help_command(sender_id, interface)
-
 
 
 
