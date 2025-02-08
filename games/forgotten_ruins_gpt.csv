@@ -74,13 +74,13 @@ The energy you absorbed begins to change you., Embrace the transformation, 130, 
 With great effort you stabilize the structure but at a great cost to yourself., Accept your fate and remain as guardian, 132, Collapse from exhaustion, 133
 The temple now reshaped by your will stands as a beacon of forgotten power., Welcome seekers of knowledge, 134, Guard the temple against intruders, 135
 The ruins finally settle with their magic fading into history., Leave the site behind, 136, Record your findings for future generations, 137
-The once-great temple is lost beneath the sands of time but its whispers remain., A new era begins, 138, The story ends here!
+The once-great temple is lost beneath the sands of time but its whispers remain., A new era begins, 138
 Your name is forever inscribed in history as the last one to witness the temple's power. Fade into legend!
 The debris falls and you barely dodge out of the way., Sprint towards an opening, 139, Try to push through, 140
 The alcove provides momentary safety but the air grows thin., Search for a hidden passage, 141, Wait and conserve energy, 142
 The transformation consumes you—reshaping you into something no longer human., Accept your new form, 143, Fight against the corruption, 144
 The energy pulses violently causing instability in your body., Channel it into the ruins, 145, Attempt to purge it from yourself, 146
-You collapse from exhaustion but the ruins now stand strong once more., A new guardian rises, 147, The temple's power is sealed forever!
+You collapse from exhaustion but the ruins now stand strong once more., A new guardian rises, 147
 The seekers arrive drawn to the beacon of your presence., Welcome them as disciples, 148, Warn them to stay away, 149
 The world forgets the ruins leaving only myths behind. The story fades into obscurity!
 History remembers your actions and the knowledge is passed on. A new era of discovery begins!
@@ -112,11 +112,11 @@ Ignoring the mechanism you push forward into the unknown., Continue into darknes
 The symbols glow brighter as you study them filling you with knowledge., Use the knowledge to navigate, 194, Step away before it's too late, 195
 Proceeding cautiously you feel an unseen force guiding you., Follow the force, 196, Resist and take another path, 197
 The corruption overtakes you merging your existence with the ruins. Become one with the temple!
-You fight with all your will pushing back against the corruption., Succeed in purging it, 198, Fail and succumb!
+You fight with all your will pushing back against the corruption., Succeed in purging it, 198
 The temple's gift fills you with power beyond mortal comprehension. Ascend as a godlike entity!
 Rejecting the gift you break free from the temple's grasp., Escape into the outside world, 199
 Stepping into the new world you find yourself in a realm beyond time. Accept your new reality!
-Attempting to undo the transformation you struggle as reality twists around you., Succeed and return to normal, 200, Fail and be lost forever!
+Attempting to undo the transformation you struggle as reality twists around you., Succeed and return to normal, 200
 You find a way down from the plateau arriving at a forgotten civilization., Discover their secrets, 201, Seek shelter and recover, 202
 Your body reverts the corruption fading away as you awaken in the ruins., Reflect on your journey, 203, Search for a way home, 204
 You remain trapped between worlds a forgotten specter wandering the temple's depths!
@@ -156,7 +156,7 @@ You flee as the temple collapses behind you barely making it out alive!
 The temple’s wrath is swift. Darkness engulfs you and you become another forgotten soul within its halls!
 The stairway twists endlessly leading deeper into the ruins., Continue descending, 227, Turn back, 228
 A vast underground lake stretches before you glowing faintly., Investigate the lake, 229, Search the cave for an exit, 230
-As you turn back the path behind you vanishes., Trapped you must press forward. Go to 229
+As you turn back the path behind you vanishes., Trapped you must press forward., 229
 The water is impossibly still reflecting an unfamiliar sky., Step onto the surface, 231, Reach into the water, 232
 A narrow tunnel leads further into the ruins revealing ancient inscriptions., Study the inscriptions, 233, Ignore them and move on, 234
 The water solidifies beneath you and you find yourself walking across a new reality!
@@ -167,7 +167,7 @@ The knowledge guides you safely to an exit allowing you to escape!
 Without understanding the warnings you wander into a collapsing chamber!
 The passage narrows forcing you to crawl forward., Keep moving, 237, Turn back and find another route, 238
 The tunnel opens into a grand chamber where a forgotten deity stirs., Approach the deity, 239, Find another exit, 240
-The tunnel collapses behind you forcing you to move forward., Go to 239
+The tunnel collapses behind you forcing you to move forward., You have no choice., 239
 The deity’s gaze pierces you unraveling your mind., Accept its gift, 241, Refuse and flee, 242
 You rush for another exit but the temple seals you within forever!
 Power surges through you elevating you beyond mortality., Ascend as a godlike being, 243, Resist the transformation, 244
@@ -210,7 +210,7 @@ The mechanism shifts revealing a gateway to an unknown world., Step through, 275
 The device crumbles its secrets lost forever!
 Beyond the gateway lies a world untouched by time. Explore this new realm!
 The gateway pulses as you step through sealing shut behind you., Find yourself in a new world, 277, The story ends here, 278  
-You awaken in a land beyond time with no way back., Accept your new existence!  
+You awaken in a land beyond time with no way back. Accept your new existence!  
 The energy surge consumes everything leaving only silence.!  
 You barely escape as the ruins vanish leaving no trace. The ruins are lost forever!  
 The abandoned settlement holds no answers only echoes of the past., Move on, 279, Record your discoveries, 280  
@@ -229,7 +229,7 @@ The light fades revealing nothing but broken stone. The journey ends!
 A final gust of wind carries whispers of the past as you leave. Let the ruins rest!  
 The vast desert stretches before you as you walk away., Keep moving forward, 295, Turn back for one last look, 296  
 Looking back you see nothing but endless sand where the ruins once stood. Accept the past is gone!  
-You push forward leaving the ruins behind as the wind erases your footprints., The past is forgotten!  
+You push forward leaving the ruins behind as the wind erases your footprints. The past is forgotten!  
 The desert stretches endlessly before you as you continue your journey., Seek shelter, 297, Follow the stars, 298  
 You find a small cave offering momentary refuge but no answers., Rest and recover, 299, Move on before night falls, 300  
 As you rest your dreams are filled with whispers of the ruins., Try to understand them, 301, Ignore them and focus on survival, 302  
@@ -255,61 +255,61 @@ The storm passes leaving only silence and a world forever changed. Move forward!
 Lost in the storm you wander aimlessly until the desert claims you.!  
 You emerge from the storm to find the landscape unrecognizable., Search for a landmark, 317, Continue walking, 318  
 A familiar rock formation guides you back to a known path., Follow it, 319, Ignore it and forge a new trail, 320  
-Following the path leads you to the ruins' final remnants, now barely recognizable., Pay your respects, 321, Leave without looking back, 322  
+Following the path leads you to the ruins' final remnants now barely recognizable., Pay your respects, 321, Leave without looking back, 322  
 You kneel before the ruins acknowledging the weight of forgotten history. The past is at peace!  
-You turn away from the ruins, choosing to move on without regret. The story fades!  
+You turn away from the ruins choosing to move on without regret. The story fades!  
 Straying from the path you wander into an endless desert., Keep walking, 323, Search for shelter, 324  
-You walk until exhaustion takes hold, collapsing beneath the vast sky. The journey ends!  
+You walk until exhaustion takes hold collapsing beneath the vast sky. The journey ends!  
 A small oasis appears in the distance offering a final refuge., Approach it, 325, Ignore it and press on, 326  
-The oasis is real, a haven untouched by time. You find peace in its solitude!  
-Pushing forward without rest, you are swallowed by the sands.!  
-The night is cold, the stars unfamiliar., Navigate by instinct, 327, Wait for dawn, 328  
-Your instincts fail, leading you in circles until the desert takes you.!  
-As the sun rises, the desert seems less hostile, a new journey ahead., Embrace the unknown, 329, Try to retrace your steps, 330  
-The unknown welcomes you, and you disappear into legend.!  
-Your steps bring you back to familiar ground, but the ruins are gone. The past cannot be reclaimed!  
+The oasis is real a haven untouched by time. You find peace in its solitude!  
+Pushing forward without rest you are swallowed by the sands.!  
+The night is cold the stars unfamiliar., Navigate by instinct, 327, Wait for dawn, 328  
+Your instincts fail leading you in circles until the desert takes you.!  
+As the sun rises the desert seems less hostile a new journey ahead., Embrace the unknown, 329, Try to retrace your steps, 330  
+The unknown welcomes you and you disappear into legend.!  
+Your steps bring you back to familiar ground but the ruins are gone. The past cannot be reclaimed!  
 A faint glimmer of something buried in the sand catches your eye., Dig it up, 331, Leave it undisturbed, 332  
-You uncover a single artifact, the last piece of a forgotten story., Carry it forward, 333, Bury it again, 334  
-The artifact remains with you, a reminder of all that was lost. The past is never truly gone!  
-The artifact is returned to the earth, its secrets sealed forever. The ruins remain undisturbed!  
-A distant melody drifts through the air, pulling at your memory., Follow the sound, 335, Block it out and walk away, 336  
-The melody fades as you approach, leaving only silence. Some things are not meant to be known!  
-Ignoring the sound, you continue onward, leaving behind the echoes of the past.!  
-The wind shifts, revealing an untouched section of the ruins., Investigate, 337, Turn away, 338  
+You uncover a single artifact the last piece of a forgotten story., Carry it forward, 333, Bury it again, 334  
+The artifact remains with you a reminder of all that was lost. The past is never truly gone!  
+The artifact is returned to the earth its secrets sealed forever. The ruins remain undisturbed!  
+A distant melody drifts through the air pulling at your memory., Follow the sound, 335, Block it out and walk away, 336  
+The melody fades as you approach leaving only silence. Some things are not meant to be known!  
+Ignoring the sound you continue onward leaving behind the echoes of the past.!  
+The wind shifts revealing an untouched section of the ruins., Investigate, 337, Turn away, 338  
 The ruins hold no more secrets—only dust and echoes. There is nothing left to find!  
-Walking away, you choose the future over the past. Some mysteries must remain unsolved!  
-You dig deeper, uncovering a hidden vault beneath the sand., Enter the vault, 339, Leave it buried, 340  
+Walking away you choose the future over the past. Some mysteries must remain unsolved!  
+You dig deeper uncovering a hidden vault beneath the sand., Enter the vault, 339, Leave it buried, 340  
 Inside, the air is thick with age. The walls whisper of forgotten knowledge., Listen closely, 341, Seal the vault behind you, 342  
 The voices reveal nothing but lost echoes. The ruins' story is already over!  
 You collapse the entrance, ensuring nothing will be disturbed again. Time reclaims the past!  
-Leaving the vault buried, you turn away, letting history rest. Some doors are best left closed!  
-A shadow looms over the horizon, shifting and unnatural., Confront it, 343, Walk in the opposite direction, 344  
-The shadow engulfs you, its purpose unknowable. Some mysteries should remain unsolved!  
-You avoid the presence, pushing forward into the unknown, leaving the past behind!  
+Leaving the vault buried you turn away, letting history rest. Some doors are best left closed!  
+A shadow looms over the horizon shifting and unnatural., Confront it, 343, Walk in the opposite direction, 344  
+The shadow engulfs you its purpose unknowable. Some mysteries should remain unsolved!  
+You avoid the presence pushing forward into the unknown leaving the past behind!  
 The desert air grows still as if the ruins themselves are fading from existence., Accept it, 345, Try to stop it, 346  
-You stand in silence, knowing the past cannot be held forever. Time moves on!  
+You stand in silence knowing the past cannot be held forever. Time moves on!  
 Your efforts are in vain—the ruins dissolve into dust, lost to history!  
 A final doorway stands before you, untouched by the collapse., Step through, 347, Turn away, 348  
 Beyond the door is nothing but darkness. There is no more story to tell!  
-You walk away, never knowing what lay beyond. Some doors are better left closed!  
-A distant storm approaches, erasing the last traces of the ruins., Watch it unfold, 349, Seek shelter, 350  
-The storm consumes everything, wiping away all remnants of the past. The cycle is complete!  
-You shelter from the storm, emerging into a world that has already moved on!  
-The sands shift beneath your feet, revealing something ancient., Examine it, 351, Walk away, 352  
-The object is a simple stone, smoothed by time. No secrets remain!  
+You walk away never knowing what lay beyond. Some doors are better left closed!  
+A distant storm approaches erasing the last traces of the ruins., Watch it unfold, 349, Seek shelter, 350  
+The storm consumes everything wiping away all remnants of the past. The cycle is complete!  
+You shelter from the storm emerging into a world that has already moved on!  
+The sands shift beneath your feet revealing something ancient., Examine it, 351, Walk away, 352  
+The object is a simple stone smoothed by time. No secrets remain!  
 You turn away, choosing the present over the past. The ruins are truly gone!  
 The last echoes of the ruins fade from your mind., Hold onto the memory, 353, Let it go, 354  
-You remember, but memories are all that remain. Time moves on without them!  
-You release the past, feeling lighter than before. The ruins vanish from history!  
-The memory lingers, a fleeting echo of what once was., Accept the fleeting nature of time, 355, Try to reclaim what was lost, 356  
-Time erodes all things, and you walk forward, carrying only the lessons learned!  
-You reach out to the past, but it slips through your fingers like sand. Nothing can be reclaimed!  
-The ruins are gone, yet a single pathway remains before you., Follow it, 357, Turn back one last time, 358  
-The path leads to a vast, endless horizon. There is nothing left to find!  
-You turn back, but where once there were ruins, now only emptiness remains!  
-A faint whisper carries on the wind, a voice you once knew., Listen, 359, Ignore it and walk away, 360  
-The whisper fades, leaving only silence. Some stories were never meant to be remembered!  
-You walk away, never looking back. The past is gone, and the present remains!  
+You remember but memories are all that remain. Time moves on without them!  
+You release the past feeling lighter than before. The ruins vanish from history!  
+The memory lingers a fleeting echo of what once was., Accept the fleeting nature of time, 355, Try to reclaim what was lost, 356  
+Time erodes all things and you walk forward carrying only the lessons learned!  
+You reach out to the past but it slips through your fingers like sand. Nothing can be reclaimed!  
+The ruins are gone yet a single pathway remains before you., Follow it, 357, Turn back one last time, 358  
+The path leads to a vast endless horizon. There is nothing left to find!  
+You turn back but where once there were ruins now only emptiness remains!  
+A faint whisper carries on the wind a voice you once knew., Listen, 359, Ignore it and walk away, 360  
+The whisper fades leaving only silence. Some stories were never meant to be remembered!  
+You walk away never looking back. The past is gone and the present remains!  
 The sand beneath your feet shifts, revealing one final inscription., Read it, 361, Leave it untouched, 362  
 The words are unreadable, eroded by time. Its meaning is lost forever!  
 You leave the inscription behind, knowing some secrets were never meant to be uncovered!  
@@ -468,4 +468,4 @@ You find peace among strangers, a quiet place to call home!
 You choose solitude, letting the road take you wherever it may!  
 The wind carries the last remnants of the past away., Whisper a farewell, 465, Say nothing and move on, 466  
 Your whispered goodbye is the final closure you needed!  
-You say nothing, but deep inside, you know it is over!  
+You say nothing but deep inside you know it is over!  
