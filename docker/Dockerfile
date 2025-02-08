@@ -1,45 +1,36 @@
-# First stage: Base build environment
+# From original Dockerfile at https://github.com/TheCommsChannel/TC2-BBS-mesh
 FROM debian:stable-slim AS build
 
-# Install required dependencies
 RUN apt-get update && \
-    apt-get install -y git && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+  apt-get install -y \
+  git \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Ensure the 'games' directory exists
-RUN mkdir -p /home/mesh/bbs/games
+# Clone the repository
+RUN git clone https://github.com/TheCommsChannel/TC2-BBS-mesh.git
 
-# Set working directory
-WORKDIR /home/mesh/bbs
+####
 
-# Copy project files including 'games' directory
-COPY . /home/mesh/bbs/
+FROM --platform=$BUILDPLATFORM python:alpine
 
-# Second stage: Final runtime environment
-FROM python:alpine
-
-# Add a non-root user for security
+# Switch to non-root user
 RUN adduser --disabled-password mesh
-
-# Ensure working directory
+USER mesh
 RUN mkdir -p /home/mesh/bbs
 WORKDIR /home/mesh/bbs
 
-# Copy files from the build stage
-COPY --from=build /home/mesh/bbs /home/mesh/bbs/
-
 # Install Python dependencies
+COPY --from=build /TC2-BBS-mesh/requirements.txt ./
 RUN pip install --no-cache-dir --break-system-packages -r requirements.txt
 
-# Ensure the 'games' directory exists in runtime container
-RUN mkdir -p /home/mesh/bbs/games
+# Copy over app code
+COPY --from=build /TC2-BBS-mesh/*.py ./
 
-# Set user to mesh
-USER mesh
+# Define config volume
+VOLUME /home/mesh/bbs/config
+WORKDIR /home/mesh/bbs/config
+COPY --from=build /TC2-BBS-mesh/example_config.ini ./config.ini
+COPY --from=build /TC2-BBS-mesh/fortunes.txt ./
 
-# Expose necessary ports
-EXPOSE 8080
-
-# Start the server
-CMD ["python", "server.py"]
-
+# Define the command to run
+ENTRYPOINT [ "python3", "/home/mesh/bbs/server.py" ]
