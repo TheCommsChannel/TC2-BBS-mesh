@@ -14,6 +14,11 @@ other BBS servers listed in the config.ini file.
 
 import logging
 import time
+import sys
+import io
+
+# Reconfigure stdout to use UTF-8 encoding
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 from config_init import initialize_config, get_interface, init_cli_parser, merge_config
 from db_operations import initialize_database
