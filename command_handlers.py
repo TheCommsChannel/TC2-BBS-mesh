@@ -382,7 +382,7 @@ def handle_channel_directory_steps(sender_id, message, step, state, interface):
             else:
                 send_message("No channels available in the directory.", sender_id, interface)
                 handle_channel_directory_command(sender_id, interface)
-        elif choice.lower == 'p':
+        elif choice.lower() == 'p':
             send_message("Name your channel for the directory:", sender_id, interface)
             update_user_state(sender_id, {'command': 'CHANNEL_DIRECTORY', 'step': 3})
 
