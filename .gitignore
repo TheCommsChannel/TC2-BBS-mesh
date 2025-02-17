@@ -6,3 +6,4 @@ venv/
 .idea
 config.ini
 fortunes.txt
+offline_game_tester.py

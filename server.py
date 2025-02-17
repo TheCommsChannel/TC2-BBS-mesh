@@ -14,6 +14,13 @@ other BBS servers listed in the config.ini file.
 
 import logging
 import time
+import sys
+import io
+import locale
+
+# Apply UTF-8 fix only if needed
+if "utf" not in locale.getpreferredencoding().lower():
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 from config_init import initialize_config, get_interface, init_cli_parser, merge_config
 from db_operations import initialize_database
@@ -45,7 +52,7 @@ def display_banner():
    ██║   ██║     ██╔═══╝ ╚════╝██╔══██╗██╔══██╗╚════██║
    ██║   ╚██████╗███████╗      ██████╔╝██████╔╝███████║
    ╚═╝    ╚═════╝╚══════╝      ╚═════╝ ╚═════╝ ╚══════╝
-Meshtastic Version
+Meshtastic Version WITH GAMES
 """
     print(banner)
 
