@@ -84,7 +84,7 @@ def add_bulletin(board, sender_short_name, subject, content, bbs_nodes, interfac
 
     # New logic to send group chat notification for urgent bulletins
     if board.lower() == "urgent":
-        notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}"
+        notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}\nDM "CB,,Urgent" to view"
         send_message(notification_message, BROADCAST_NUM, interface)
 
     return unique_id
