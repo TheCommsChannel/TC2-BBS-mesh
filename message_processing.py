@@ -71,7 +71,7 @@ def process_message(sender_id, message, interface, is_sync_message=False):
             add_bulletin(board, sender_short_name, subject, content, [], interface, unique_id=unique_id)
 
             if board.lower() == "urgent":
-                notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}"
+                notification_message = f"💥NEW URGENT BULLETIN💥\nFrom: {sender_short_name}\nTitle: {subject}\nDM "CB,,Urgent" to view"
                 send_message(notification_message, BROADCAST_NUM, interface)
         elif message.startswith("MAIL|"):
             parts = message.split("|")
