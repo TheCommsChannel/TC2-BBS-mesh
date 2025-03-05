@@ -198,11 +198,16 @@ def handle_bb_steps(sender_id, message, step, state, interface, bbs_nodes):
             update_user_state(sender_id, {'command': 'BULLETIN_POST', 'step': 4, 'board': board_name})
 
     elif step == 3:
-        bulletin_id = int(message)
-        sender_short_name, date, subject, content, unique_id = get_bulletin_content(bulletin_id)
-        send_message(f"From: {sender_short_name}\nDate: {date}\nSubject: {subject}\n- - - - - - -\n{content}", sender_id, interface)
-        board_name = state['board']
-        handle_bb_steps(sender_id, 'e', 1, state, interface, bbs_nodes)
+        try:
+            bulletin_id = int(message)
+            sender_short_name, date, subject, content, unique_id = get_bulletin_content(bulletin_id)
+            send_message(f"From: {sender_short_name}\nDate: {date}\nSubject: {subject}\n- - - - - - -\n{content}", sender_id, interface)
+            board_name = state['board']
+            handle_bb_steps(sender_id, 'e', 1, state, interface, bbs_nodes)
+        except ValueError:
+            logging.info(f"Node {sender_id} entered a non-integer value in the read bulletin menu")
+            send_message("Your message must only contain the bulletin number Try again or e[X]it.", sender_id, interface)
+
 
     elif step == 4:
         subject = message
@@ -255,8 +260,8 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             handle_help_command(sender_id, interface)
 
     elif step == 2:
-        mail_id = int(message)
         try:
+            mail_id = int(message)
             sender_node_id = get_node_id_from_num(sender_id, interface)
             sender, date, subject, content, unique_id = get_mail_content(mail_id, sender_node_id)
             send_message(f"Date: {date}\nFrom: {sender}\nSubject: {subject}\n{content}", sender_id, interface)
@@ -266,6 +271,9 @@ def handle_mail_steps(sender_id, message, step, state, interface, bbs_nodes):
             logging.info(f"Node {sender_id} tried to access non-existent message")
             send_message("Mail not found", sender_id, interface)
             update_user_state(sender_id, None)
+        except ValueError:
+            logging.info(f"Node {sender_id} entered a non-integer value in the read mail menu")
+            send_message("Your message must only contain the message number Try again or e[X]it.", sender_id, interface)
 
     elif step == 3:
         short_name = message.lower()
