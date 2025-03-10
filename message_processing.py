@@ -1,4 +1,5 @@
 import logging
+import os
 
 from meshtastic import BROADCAST_NUM
 
@@ -8,11 +9,17 @@ from command_handlers import (
     handle_channel_directory_command, handle_channel_directory_steps, handle_send_mail_command,
     handle_read_mail_command, handle_check_mail_command, handle_delete_mail_confirmation, handle_post_bulletin_command,
     handle_check_bulletin_command, handle_read_bulletin_command, handle_read_channel_command,
-    handle_post_channel_command, handle_list_channels_command, handle_quick_help_command
-)
+    handle_post_channel_command, handle_list_channels_command, handle_quick_help_command, handle_games_command, process_game_choice,
+    start_selected_game, handle_game_menu_selection
+    )
+
+import command_handlers
+
+games_available = command_handlers.get_games_available(os.listdir('./games'))
+
 from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection, add_channel
 from js8call_integration import handle_js8call_command, handle_js8call_steps, handle_group_message_selection
-from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message
+from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message, update_user_state
 
 main_menu_handlers = {
     "q": handle_quick_help_command,
@@ -31,6 +38,7 @@ bbs_menu_handlers = {
 
 
 utilities_menu_handlers = {
+    "g": handle_games_command,
     "s": handle_stats_command,
     "f": handle_fortune_command,
     "w": handle_wall_of_shame_command,
@@ -52,6 +60,12 @@ board_action_handlers = {
     "p": lambda sender_id, interface, state: handle_bb_steps(sender_id, 'p', 2, state, interface, None),
     "x": handle_help_command
 }
+
+games_menu_handlers = {
+    "x": handle_help_command,
+}
+for i in range(1, len(games_available) + 1):
+    games_menu_handlers[str(i)] = lambda sender_id, interface, i=i: handle_game_menu_selection(sender_id, str(i), 1, interface, None)
 
 def process_message(sender_id, message, interface, is_sync_message=False):
     state = get_user_state(sender_id)
@@ -90,6 +104,26 @@ def process_message(sender_id, message, interface, is_sync_message=False):
             channel_name, channel_url = parts[1], parts[2]
             add_channel(channel_name, channel_url)
     else:
+        # ✅ **Fix: Ensure Games Menu Loads After Exiting a Game**
+        if state and state['command'] == 'IN_GAME':
+            logging.debug(f"🎮 User {sender_id} is in-game, processing game command...")
+
+            if message_lower == "x":
+                logging.debug(f"❌ User {sender_id} exited the game. Sending exit message...")
+                send_message(f"Exiting '{state['game']}'... Returning to Games Menu.", sender_id, interface)
+                update_user_state(sender_id, {'command': 'GAMES', 'step': 1})
+
+                logging.debug(f"🚀 Calling handle_games_command() for user {sender_id} after exit.")
+                handle_games_command(sender_id, interface)
+                logging.debug(f"✅ handle_games_command() execution completed for user {sender_id}!")
+
+                return
+
+            # Otherwise, process the game choice
+            process_game_choice(sender_id, message, interface, state)
+            return
+
+        # 📌 Other menu processing remains unchanged
         if message_lower.startswith("sm,,"):
             handle_send_mail_command(sender_id, message_strip, interface, bbs_nodes)
         elif message_lower.startswith("cm"):
@@ -109,6 +143,8 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                     handlers = bbs_menu_handlers
                 elif menu_name == 'utilities':
                     handlers = utilities_menu_handlers
+                elif menu_name == 'games':
+                    handlers = games_menu_handlers
                 else:
                     handlers = main_menu_handlers
             elif state and state['command'] == 'BULLETIN_MENU':
@@ -120,6 +156,9 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                 return
             elif state and state['command'] == 'GROUP_MESSAGES':
                 handle_group_message_selection(sender_id, message, state['step'], state, interface)
+                return
+            elif state and state['command'] == 'GAMES':
+                handle_game_menu_selection(sender_id, message, state['step'], interface, state)
                 return
             else:
                 handlers = main_menu_handlers
@@ -174,6 +213,7 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                     handle_help_command(sender_id, interface)
             else:
                 handle_help_command(sender_id, interface)
+
 
 
 def on_receive(packet, interface):
