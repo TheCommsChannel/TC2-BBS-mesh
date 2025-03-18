@@ -66,9 +66,10 @@ def main():
     logging.info(f"TC²-BBS is running on {system_config['interface_type']} interface...")
 
     initialize_database()
+    whitelist = system_config['whitelist']
 
     def receive_packet(packet, interface):
-        on_receive(packet, interface)
+        on_receive(packet, interface, whitelist)
 
     pub.subscribe(receive_packet, system_config['mqtt_topic'])
 

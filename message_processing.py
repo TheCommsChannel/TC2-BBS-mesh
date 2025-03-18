@@ -176,7 +176,8 @@ def process_message(sender_id, message, interface, is_sync_message=False):
                 handle_help_command(sender_id, interface)
 
 
-def on_receive(packet, interface):
+def on_receive(packet, interface, whitelist=None):
+    whitelist = whitelist or []
     try:
         if 'decoded' in packet and packet['decoded']['portnum'] == 'TEXT_MESSAGE_APP':
             message_bytes = packet['decoded']['payload']
@@ -184,7 +185,9 @@ def on_receive(packet, interface):
             sender_id = packet['from']
             to_id = packet.get('to')
             sender_node_id = packet['fromId']
-
+            if whitelist and str(sender_id) not in whitelist: 
+                logging.info(f'loaded whitelist {whitelist} does not contain {sender_id}')
+                return
             sender_short_name = get_node_short_name(sender_node_id, interface)
             receiver_short_name = get_node_short_name(get_node_id_from_num(to_id, interface),
                                                       interface) if to_id else "Group Chat"

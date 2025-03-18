@@ -117,6 +117,9 @@ def initialize_config(config_file: str = None) -> dict[str, Any]:
     allowed_nodes = config.get('allow_list', 'allowed_nodes', fallback='').split(',')
     if allowed_nodes == ['']:
         allowed_nodes = []
+    whitelist = config.get('whitelist', 'allowed_users', fallback='').split(',')
+    if whitelist == ['']:
+        whitelist = []
 
     print(f"Nodes with Urgent board permissions: {allowed_nodes}")
 
@@ -127,7 +130,8 @@ def initialize_config(config_file: str = None) -> dict[str, Any]:
         'port': port,
         'bbs_nodes': bbs_nodes,
         'allowed_nodes': allowed_nodes,
-        'mqtt_topic': 'meshtastic.receive'
+        'mqtt_topic': 'meshtastic.receive',
+        'whitelist': whitelist
     }
 
 
