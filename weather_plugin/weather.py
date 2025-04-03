@@ -1,5 +1,5 @@
 """
-Weather Module for EDC LV BBS
+Weather Module for TC² BBS
 
 This module provides weather information using the OpenWeather API.
 """

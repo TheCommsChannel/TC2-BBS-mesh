@@ -1,7 +1,7 @@
 # Weather Plugin Documentation
 
 ## Overview
-The Weather Plugin provides weather information for the EDC LV BBS system using the OpenWeather API. It allows users to query current weather conditions by ZIP code.
+The Weather Plugin provides weather information for the TC² BBS system using the OpenWeather API. It allows users to query current weather conditions by ZIP code. The plugin is accessible through the Plugins Menu in the BBS system.
 
 ## Structure
 ```
@@ -49,18 +49,26 @@ Settings:
   - Max calls per day
 - Plugin enabled/disabled flag
 
+## Menu Integration
+The Weather Plugin is integrated into the TC² BBS system through the Plugins Menu:
+- Located in the main menu under [P]lugins
+- Identified by "WE" in the plugins menu
+- Configurable through the plugin_menu_items setting in config.ini
+
 ## Usage Flow
-1. User selects "[WE]ather" from main menu
-2. System prompts for ZIP code
-3. User enters 5-digit ZIP code
-4. System checks rate limits
-5. Makes API request if within limits
-6. Returns formatted weather data:
+1. User selects [P]lugins from main menu
+2. User selects "[WE]ather" from plugins menu
+3. System prompts for ZIP code
+4. User enters 5-digit ZIP code
+5. System checks rate limits
+6. Makes API request if within limits
+7. Returns formatted weather data:
    - Temperature
    - Feels like temperature
    - Humidity
    - Weather conditions
    - City name
+8. Returns to plugins menu after displaying weather
 
 ## Error Handling
 - Invalid ZIP codes
