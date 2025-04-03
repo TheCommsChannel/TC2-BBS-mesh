@@ -4,6 +4,7 @@ import random
 import time
 
 from meshtastic import BROADCAST_NUM
+from weather_plugin.menu import get_weather_menu_text
 
 from db_operations import (
     add_bulletin, add_mail, delete_mail,
@@ -24,6 +25,7 @@ config.read('config.ini')
 main_menu_items = config['menu']['main_menu_items'].split(',')
 bbs_menu_items = config['menu']['bbs_menu_items'].split(',')
 utilities_menu_items = config['menu']['utilities_menu_items'].split(',')
+plugin_menu_items = config['menu']['plugin_menu_items'].split(',')
 
 
 def build_menu(items, menu_name):
@@ -38,6 +40,8 @@ def build_menu(items, menu_name):
                 menu_str += "[B]BS\n"
         elif item.strip() == 'U':
             menu_str += "[U]tilities\n"
+        elif item.strip() == 'P':
+            menu_str += "[P]lugins\n"
         elif item.strip() == 'X':
             menu_str += "E[X]IT\n"
         elif item.strip() == 'M':
@@ -52,6 +56,8 @@ def build_menu(items, menu_name):
             menu_str += "[F]ortune\n"
         elif item.strip() == 'W':
             menu_str += "[W]all of Shame\n"
+        elif item.strip() == 'WE':
+            menu_str += get_weather_menu_text()
     return menu_str
 
 def handle_help_command(sender_id, interface, menu_name=None):
@@ -61,6 +67,8 @@ def handle_help_command(sender_id, interface, menu_name=None):
             response = build_menu(bbs_menu_items, "📰BBS Menu📰")
         elif menu_name == 'utilities':
             response = build_menu(utilities_menu_items, "🛠️Utilities Menu🛠️")
+        elif menu_name == 'plugins':
+            response = build_menu(plugin_menu_items, "🔌Plugins Menu🔌")
     else:
         update_user_state(sender_id, {'command': 'MAIN_MENU', 'step': 1})  # Reset to main menu state
         mail = get_mail(get_node_id_from_num(sender_id, interface))

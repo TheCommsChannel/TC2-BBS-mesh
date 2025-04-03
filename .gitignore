@@ -1,8 +1,8 @@
 __pycache__/
-bulletins.db
-js8call.db
+*.db
 venv/
 .venv
 .idea
 config.ini
+*/*.ini
 fortunes.txt
