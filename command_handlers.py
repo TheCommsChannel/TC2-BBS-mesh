@@ -4,7 +4,7 @@ import random
 import time
 
 from meshtastic import BROADCAST_NUM
-from weather_plugin.menu import get_weather_menu_text
+from plugins.weather_plugin.menu import get_weather_menu_text
 
 from db_operations import (
     add_bulletin, add_mail, delete_mail,

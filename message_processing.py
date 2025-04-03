@@ -10,10 +10,10 @@ from command_handlers import (
     handle_check_bulletin_command, handle_read_bulletin_command, handle_read_channel_command,
     handle_post_channel_command, handle_list_channels_command, handle_quick_help_command
 )
-from weather_plugin.command_router import handle_weather_command, handle_weather_steps
+from plugins.weather_plugin.command_router import handle_weather_command, handle_weather_steps
 from db_operations import add_bulletin, add_mail, delete_bulletin, delete_mail, get_db_connection, add_channel
 from js8call_integration import handle_js8call_command, handle_js8call_steps, handle_group_message_selection
-from utils import get_user_state, get_node_short_name, get_node_id_from_num, send_message
+from utils import get_node_short_name, get_node_id_from_num, send_message, get_user_state, update_user_state
 
 main_menu_handlers = {
     "q": handle_quick_help_command,
