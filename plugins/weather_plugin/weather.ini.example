@@ -1,0 +1,12 @@
+##########################
+#### OpenWeather API ####
+##########################
+# API key and rate limiting settings for the OpenWeather API
+# You can get one here.. https://openweathermap.org/api
+[openweather]
+api_key = YOUR API KEY HERE
+# Maximum number of API calls per minute (default: 30)
+max_calls_per_minute = 30
+# Maximum number of API calls per day (default: 500)
+max_calls_per_day = 500
+enabled = true
