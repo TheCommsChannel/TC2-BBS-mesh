@@ -154,7 +154,8 @@ def handle_stats_steps(sender_id, message, step, interface):
         elif choice == 'r':
             roles = {}
             for node in interface.nodes.values():
-                role = node['user'].get('role', 'Unknown')
+                # Role not specified when CLIENT. If no role, set to CLIENT
+                role = node['user'].get('role', 'CLIENT')
                 roles[role] = roles.get(role, 0) + 1
             response = "Roles:\n" + "\n".join([f"{role}: {count}" for role, count in roles.items()])
             send_message(response, sender_id, interface)
