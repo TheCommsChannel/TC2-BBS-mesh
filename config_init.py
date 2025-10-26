@@ -169,9 +169,12 @@ def get_interface(system_config:dict[str, Any]) -> meshtastic.stream_interface.S
                     else:
                         raise ValueError("No serial ports detected.")
             elif system_config['interface_type'] == 'tcp':
+                port_num = meshtastic.tcp_interface.DEFAULT_TCP_PORT
                 if not system_config['hostname']:
                     raise ValueError("Hostname must be specified for TCP interface")
-                return meshtastic.tcp_interface.TCPInterface(hostname=system_config['hostname'])
+                if system_config['port']:
+                    port_num = system_config['port']
+                return meshtastic.tcp_interface.TCPInterface(hostname=system_config['hostname'], portNumber=port_num)
             else:
                 raise ValueError("Invalid interface type specified in config file")
         except PermissionError as e:
