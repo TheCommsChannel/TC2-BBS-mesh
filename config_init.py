@@ -87,10 +87,10 @@ def initialize_config(config_file: str = None) -> dict[str, Any]:
 
     Returns a dict with the following entries:
     config - parsed config file
+    config_file - the path it was read from
     interface_type - type of the active interface
     hostname - host name for TCP interface
     port - serial port name for serial interface
-    bbs_nodes - list of peer nodes to sync with
 
     Args:
         config_file (str, optional): Path to config file. Function reads from './config.ini' if this arg is set to None. Defaults to None.
@@ -108,25 +108,12 @@ def initialize_config(config_file: str = None) -> dict[str, Any]:
     hostname = config['interface'].get('hostname', None)
     port = config['interface'].get('port', None)
 
-    bbs_nodes = config.get('sync', 'bbs_nodes', fallback='').split(',')
-    if bbs_nodes == ['']:
-        bbs_nodes = []
-
-    print(f"Configured to sync with the following BBS nodes: {bbs_nodes}")
-
-    allowed_nodes = config.get('allow_list', 'allowed_nodes', fallback='').split(',')
-    if allowed_nodes == ['']:
-        allowed_nodes = []
-
-    print(f"Nodes with Urgent board permissions: {allowed_nodes}")
-
     return {
         'config': config,
+        'config_file': config_file,
         'interface_type': interface_type,
         'hostname': hostname,
         'port': port,
-        'bbs_nodes': bbs_nodes,
-        'allowed_nodes': allowed_nodes,
         'mqtt_topic': 'meshtastic.receive'
     }
 

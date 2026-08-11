@@ -1,22 +1,23 @@
-from socket import socket, AF_INET, SOCK_STREAM
+"""The JS8Call bridge: listens to a JS8Call instance and stores what it hears.
+
+The client owns its own thread. `start()` returns immediately; `close()` stops
+the listener and waits for it. Callers never see a socket or a thread.
+
+Browsing what it stored is Js8Flow's job. Writes go through the shared
+Js8Database, so the writer and the reader cannot point at different files.
+"""
+
+from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR
 import json
+import threading
 import time
-import sqlite3
-import configparser
 import logging
 
 from meshtastic import BROADCAST_NUM
 
-from command_handlers import handle_help_command
-from utils import send_message, update_user_state
+#: How long close() waits for the listener to notice and stop.
+_JOIN_TIMEOUT = 2.0
 
-config_file = 'config.ini'
-
-def from_message(content):
-    try:
-        return json.loads(content)
-    except ValueError:
-        return {}
 
 def to_message(typ, value='', params=None):
     if params is None:
@@ -24,116 +25,149 @@ def to_message(typ, value='', params=None):
     return json.dumps({'type': typ, 'value': value, 'params': params})
 
 
+def decode_messages(buffer, logger=None):
+    """Split a byte buffer into complete JS8Call messages.
+
+    JS8Call speaks newline-delimited JSON. A single recv() may carry several
+    messages, or half of one. Returns the messages that are complete and the
+    bytes left over for the next read.
+
+    The previous implementation called json.loads on whatever one recv()
+    returned and dropped everything on a parse error, so two messages arriving
+    in one TCP segment were both lost silently.
+    """
+    logger = logger or logging.getLogger('js8call')
+    messages = []
+    while b"\n" in buffer:
+        line, buffer = buffer.split(b"\n", 1)
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            message = json.loads(line.decode('utf-8'))
+        except (ValueError, UnicodeDecodeError):
+            logger.warning(f"Discarding unparseable JS8Call message: {line[:80]!r}")
+            continue
+        if message:
+            messages.append(message)
+    return messages, buffer
+
+
 class JS8CallClient:
-    def __init__(self, interface, logger=None):
+    def __init__(self, transport, js8_config, js8_database, logger=None):
         self.logger = logger or logging.getLogger('js8call')
         self.logger.setLevel(logging.INFO)
         self.logger.propagate = False
 
-        self.config = configparser.ConfigParser()
-        self.config.read(config_file)
-
-        self.server = (
-            self.config.get('js8call', 'host', fallback=None),
-            self.config.getint('js8call', 'port', fallback=None)
-        )
-        self.db_file = self.config.get('js8call', 'db_file', fallback=None)
-        self.js8groups = self.config.get('js8call', 'js8groups', fallback='').split(',')
-        self.store_messages = self.config.getboolean('js8call', 'store_messages', fallback=True)
-        self.js8urgent = self.config.get('js8call', 'js8urgent', fallback='').split(',')
-        self.js8groups = [group.strip() for group in self.js8groups]
-        self.js8urgent = [group.strip() for group in self.js8urgent]
+        self.server = (js8_config.host, js8_config.port)
+        self.js8groups = list(js8_config.groups)
+        self.js8urgent = list(js8_config.urgent)
+        self.store_messages = js8_config.store_messages
 
         self.connected = False
         self.sock = None
-        self.db_conn = None
-        self.interface = interface
+        self.transport = transport
+        self.database = js8_database
+        self._thread = None
 
-        if self.db_file:
-            self.db_conn = sqlite3.connect(self.db_file)
-            self.create_tables()
+        if self.database.configured:
+            self.database.create_tables()
+            self.logger.info("JS8Call database tables created or verified.")
         else:
             self.logger.info("JS8Call configuration not found. Skipping JS8Call integration.")
 
-    def create_tables(self):
-        if not self.db_conn:
-            return
+    # --- lifecycle --------------------------------------------------------
 
-        with self.db_conn:
-            self.db_conn.execute('''
-                CREATE TABLE IF NOT EXISTS messages (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    sender TEXT,
-                    receiver TEXT,
-                    message TEXT,
-                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            ''')
-            self.db_conn.execute('''
-                CREATE TABLE IF NOT EXISTS groups (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    sender TEXT,
-                    groupname TEXT,
-                    message TEXT,
-                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            ''')
-            self.db_conn.execute('''
-                CREATE TABLE IF NOT EXISTS urgent (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    sender TEXT,
-                    groupname TEXT,
-                    message TEXT,
-                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            ''')
-        self.logger.info("Database tables created or verified.")
+    def start(self):
+        """Listen in the background. Returns immediately.
 
-    def insert_message(self, table, sender, recipient, message):
+        Does nothing when the bridge is not configured, so the caller does not
+        have to know what "configured" means.
         """
-        Inserts a message into the specified table in the database.
-
-        This method saves a message along with its sender and receiver or group name into the specified table.
-        If the database connection is not available, it logs an error message.
-
-        Parameters:
-        -----------
-        table : str
-            The name of the table where the message should be inserted. It can be 'messages', 'groups', or 'urgent'.
-        
-        sender : str
-            The meshtastic node identifier of the sender who issued the command
-        
-        recipient : str
-            The identifier of the receiver of the message or the group name.
-        
-        message : str
-            The content of the message.
-
-        Example Usage:
-        --------------
-        client.insert_message('messages', sender='CALLSIGN1', receiver_or_group='CALLSIGN2', message='This is a message.')
-        client.insert_message('groups', sender='CALLSIGN1', receiver_or_group='GroupName', message='This is a group message.')
-        client.insert_message('urgent', sender='CALLSIGN1', receiver_or_group='UrgentGroupName', message='This is an urgent message.')
-        """
-
-        if not self.db_conn:
-            self.logger.error("Database connection is not available.")
+        if not self.database.configured:
             return
+        if not self.server[0] or not self.server[1]:
+            self.logger.info("JS8Call server configuration not found. Skipping JS8Call connection.")
+            return
+        self._thread = threading.Thread(target=self._run, name='js8call', daemon=True)
+        self._thread.start()
 
+    def close(self):
+        """Stop listening and wait for the listener to finish."""
+        self.connected = False
+        sock, self.sock = self.sock, None
+        if sock is not None:
+            try:
+                sock.shutdown(SHUT_RDWR)   # unblocks a listener parked in recv()
+            except OSError:
+                pass
+            try:
+                sock.close()
+            except OSError:
+                pass
+        if self._thread is not None and self._thread.is_alive():
+            self._thread.join(timeout=_JOIN_TIMEOUT)
+
+    # --- the listener -----------------------------------------------------
+
+    def _run(self):
         try:
-            with self.db_conn:
-                self.db_conn.execute(f'''
-                    INSERT INTO {table} (sender, { 'receiver' if table == 'messages' else 'groupname' }, message)
-                    VALUES (?, ?, ?)
-                ''', (sender, receiver_or_group, message))
-        except sqlite3.Error as e:
-            self.logger.error(f"Failed to insert message into {table} table: {e}")
+            self._listen()
+        except ConnectionRefusedError:
+            self.logger.error(f"Connection to JS8Call server {self.server} refused.")
+        except OSError as error:
+            self.logger.error(f"JS8Call connection lost: {error}")
+        finally:
+            self.connected = False
+            sock, self.sock = self.sock, None
+            if sock is not None:
+                try:
+                    sock.close()
+                except OSError:
+                    pass
+
+    def _listen(self):
+        self.logger.info(f"Connecting to {self.server}")
+        self.sock = socket(AF_INET, SOCK_STREAM)
+        self.sock.connect(self.server)
+        self.connected = True
+        self.send("STATION.GET_STATUS")
+
+        buffer = b""
+        while self.connected:
+            try:
+                chunk = self.sock.recv(65500)
+            except OSError:
+                # Either the peer reset us, or close() shut the socket down.
+                break
+            if not chunk:
+                self.logger.info("JS8Call server closed the connection.")
+                break
+
+            buffer += chunk
+            messages, buffer = decode_messages(buffer, self.logger)
+            for message in messages:
+                self.process(message)
+
+        # A final message may arrive without its trailing newline.
+        if buffer.strip():
+            messages, _ = decode_messages(buffer + b"\n", self.logger)
+            for message in messages:
+                self.process(message)
+
+    def send(self, *args, **kwargs):
+        params = kwargs.get('params', {})
+        if '_ID' not in params:
+            params['_ID'] = '{}'.format(int(time.time() * 1000))
+            kwargs['params'] = params
+        message = to_message(*args, **kwargs)
+        self.sock.send((message + '\n').encode('utf-8'))
+
+    # --- what it heard ----------------------------------------------------
 
     def process(self, message):
         typ = message.get('type', '')
         value = message.get('value', '')
-        params = message.get('params', {})
 
         if not typ:
             return
@@ -160,142 +194,11 @@ class JS8CallClient:
             self.logger.info(f"Received JS8Call message: {sender} to {receiver} - {msg}")
 
             if receiver in self.js8urgent:
-                self.insert_urgent('urgent', sender, receiver, msg)
-                notification_message = f"💥 URGENT JS8Call Message Received 💥\nFrom: {sender}\nCheck BBS for message"
-                send_message(notification_message, BROADCAST_NUM, self.interface)
+                self.database.insert('urgent', sender, receiver, msg)
+                notification_message = (f"💥 URGENT JS8Call Message Received 💥\n"
+                                        f"From: {sender}\nCheck BBS for message")
+                self.transport.send(notification_message, BROADCAST_NUM)
             elif receiver in self.js8groups:
-                self.insert_message('groups', sender, receiver, msg)
+                self.database.insert('groups', sender, receiver, msg)
             elif self.store_messages:
-                self.insert_message('messages', sender, receiver, msg)
-        else:
-            pass
-
-    def send(self, *args, **kwargs):
-        params = kwargs.get('params', {})
-        if '_ID' not in params:
-            params['_ID'] = '{}'.format(int(time.time() * 1000))
-            kwargs['params'] = params
-        message = to_message(*args, **kwargs)
-        self.sock.send((message + '\n').encode('utf-8'))  # Convert to bytes
-
-    def connect(self):
-        if not self.server[0] or not self.server[1]:
-            self.logger.info("JS8Call server configuration not found. Skipping JS8Call connection.")
-            return
-
-        self.logger.info(f"Connecting to {self.server}")
-        self.sock = socket(AF_INET, SOCK_STREAM)
-        try:
-            self.sock.connect(self.server)
-            self.connected = True
-            self.send("STATION.GET_STATUS")
-
-            while self.connected:
-                content = self.sock.recv(65500).decode('utf-8')  # Decode received bytes to string
-                if not content:
-                    continue  # Skip empty content
-
-                try:
-                    message = json.loads(content)
-                except ValueError:
-                    continue  # Skip invalid JSON content
-
-                if not message:
-                    continue  # Skip empty message
-
-                self.process(message)
-        except ConnectionRefusedError:
-            self.logger.error(f"Connection to JS8Call server {self.server} refused.")
-        finally:
-            self.sock.close()
-
-    def close(self):
-        self.connected = False
-
-
-def handle_js8call_command(sender_id, interface):
-    response = "JS8Call Menu:\n[G]roup Messages\n[S]tation Messages\n[U]rgent Messages\nE[X]IT"
-    send_message(response, sender_id, interface)
-    update_user_state(sender_id, {'command': 'JS8CALL_MENU', 'step': 1})
-
-
-def handle_js8call_steps(sender_id, message, step, interface, state):
-    message = message.lower().strip()
-    if len(message) == 2 and message[1] == 'x':
-        message = message[0]
-
-    if step == 1:
-        choice = message
-        if choice == 'x':
-            handle_help_command(sender_id, interface, 'bbs')
-            return
-        elif choice == 'g':
-            handle_group_messages_command(sender_id, interface)
-        elif choice == 's':
-            handle_station_messages_command(sender_id, interface)
-        elif choice == 'u':
-            handle_urgent_messages_command(sender_id, interface)
-        else:
-            send_message("Invalid option. Please choose again.", sender_id, interface)
-            handle_js8call_command(sender_id, interface)
-
-
-
-def handle_group_messages_command(sender_id, interface):
-    conn = sqlite3.connect('js8call.db')
-    c = conn.cursor()
-    c.execute("SELECT DISTINCT groupname FROM groups")
-    groups = c.fetchall()
-    if groups:
-        response = "Group Messages Menu:\n" + "\n".join([f"[{i}] {group[0]}" for i, group in enumerate(groups)])
-        send_message(response, sender_id, interface)
-        update_user_state(sender_id, {'command': 'GROUP_MESSAGES', 'step': 1, 'groups': groups})
-    else:
-        send_message("No group messages available.", sender_id, interface)
-        handle_js8call_command(sender_id, interface)
-
-def handle_station_messages_command(sender_id, interface):
-    conn = sqlite3.connect('js8call.db')
-    c = conn.cursor()
-    c.execute("SELECT sender, receiver, message, timestamp FROM messages")
-    messages = c.fetchall()
-    if messages:
-        response = "Station Messages:\n" + "\n".join([f"[{i+1}] {msg[0]} -> {msg[1]}: {msg[2]} ({msg[3]})" for i, msg in enumerate(messages)])
-        send_message(response, sender_id, interface)
-    else:
-        send_message("No station messages available.", sender_id, interface)
-    handle_js8call_command(sender_id, interface)
-
-def handle_urgent_messages_command(sender_id, interface):
-    conn = sqlite3.connect('js8call.db')
-    c = conn.cursor()
-    c.execute("SELECT sender, groupname, message, timestamp FROM urgent")
-    messages = c.fetchall()
-    if messages:
-        response = "Urgent Messages:\n" + "\n".join([f"[{i+1}] {msg[0]} -> {msg[1]}: {msg[2]} ({msg[3]})" for i, msg in enumerate(messages)])
-        send_message(response, sender_id, interface)
-    else:
-        send_message("No urgent messages available.", sender_id, interface)
-    handle_js8call_command(sender_id, interface)
-
-def handle_group_message_selection(sender_id, message, step, state, interface):
-    groups = state['groups']
-    try:
-        group_index = int(message)
-        groupname = groups[group_index][0]
-
-        conn = sqlite3.connect('js8call.db')
-        c = conn.cursor()
-        c.execute("SELECT sender, message, timestamp FROM groups WHERE groupname=?", (groupname,))
-        messages = c.fetchall()
-
-        if messages:
-            response = f"Messages for group {groupname}:\n" + "\n".join([f"[{i+1}] {msg[0]}: {msg[1]} ({msg[2]})" for i, msg in enumerate(messages)])
-            send_message(response, sender_id, interface)
-        else:
-            send_message(f"No messages for group {groupname}.", sender_id, interface)
-    except (IndexError, ValueError):
-        send_message("Invalid group selection. Please choose again.", sender_id, interface)
-        handle_group_messages_command(sender_id, interface)
-
-    handle_js8call_command(sender_id, interface)
+                self.database.insert('messages', sender, receiver, msg)

@@ -231,6 +231,105 @@ A video of it in use is available on our YouTube channel:
 
 [![TC²-BBS-Mesh](https://img.youtube.com/vi/d6LhY4HoimU/0.jpg)](https://www.youtube.com/watch?v=d6LhY4HoimU)
 
+## Conversation map
+
+Every conversation starts at the main menu. Selecting a letter either **enters a
+flow** (a multi-step conversation like Mail or Bulletins) or triggers a **leaf**
+(a one-shot reply that leaves you where you are). Sending `X` from anywhere
+returns you to the main menu.
+
+```mermaid
+flowchart TD
+    MSG([Any direct message]) --> MAIN
+
+    MAIN["💾 TC² BBS<br/><sub>main menu</sub>"]
+    BBS["📰 BBS Menu"]
+    UTIL["🛠️ Utilities Menu"]
+
+    MAIN -->|B| BBS
+    MAIN -->|U| UTIL
+    MAIN -->|Q| QUICK["Quick Commands help"]
+
+    BBS -->|M| MAIL["✉️ Mail"]
+    BBS -->|B| BUL["📰 Bulletins"]
+    BBS -->|C| CHAN["📚 Channel Directory"]
+    BBS -->|J| JS8["📻 JS8Call"]
+
+    UTIL -->|S| STATS["📊 Stats"]
+    UTIL -->|F| FORT["🔮 Fortune"]
+    UTIL -->|W| WALL["🪫 Wall of Shame"]
+
+    QUICK -.-> MAIN
+    FORT -.-> UTIL
+    WALL -.-> UTIL
+
+    MAIL -.->|X| MAIN
+    BUL -.->|X| MAIN
+    CHAN -.->|X| MAIN
+    JS8 -.->|X| MAIN
+    STATS -.->|X| MAIN
+
+    classDef flow fill:#1e293b,color:#e0e7ff,stroke:#334155;
+    classDef leaf fill:#fef3c7,color:#78350f,stroke:#d97706;
+    classDef menu fill:#e0e7ff,color:#1e293b,stroke:#6366f1;
+    class MAIL,BUL,CHAN,STATS,JS8 flow
+    class QUICK,FORT,WALL leaf
+    class MAIN,BBS,UTIL menu
+```
+
+Solid arrows move you somewhere; dashed arrows return you. Dark boxes are flows,
+amber boxes are leaves, and light boxes are menus.
+
+Which letters each menu offers is configurable — see `[menu]` in `config.ini`.
+Removing a letter there removes it from the menu.
+
+### Quick commands
+
+Quick commands skip the menus entirely. They can be sent at any time, and they
+leave the conversation exactly where it was — sending `CM` halfway through
+composing a bulletin answers your mailbox and leaves you still composing.
+
+| Command | Does |
+| --- | --- |
+| `SM,,{short_name},,{subject},,{message}` | Send mail |
+| `CM` | Check mail |
+| `PB,,{board},,{subject},,{content}` | Post a bulletin |
+| `CB,,{board}` | Check bulletins on a board |
+| `CHP,,{name},,{url}` | Post a channel to the directory |
+| `CHL` | List channels |
+
+`{board}` must be one of General, Info, News, or Urgent. Posting to Urgent
+broadcasts a notice to the whole mesh, so it is restricted to the nodes listed
+under `[allow_list]` in `config.ini` — whether you post through the menu or
+through `PB,,`. If that section is absent, anyone may post there.
+
+The `,,` is a literal, required separator, not decoration — `SM,,bob,,Hi,,See
+you at 6` sends mail, but `SM` alone with no arguments (or `SM bob Hi ...`
+without commas) is not a valid command. `CM` and `CHL` take no arguments, so
+those two are sent bare. Send any quick command's letters alone with no `,,`
+(e.g. `PB`, `CB`, or `SM`) to get back its exact format as a reminder — a
+mistyped separator (e.g. a stray space, `PB, , General,,...`) gets the same
+reminder rather than being silently ignored.
+
+### For contributors
+
+Each conversation topic is a **Flow** — a pure module that, given a message and
+the current state, returns what to reply and where the conversation goes next.
+A **Session** dispatches to the flow that owns the current topic. The domain
+vocabulary lives in [CONTEXT.md](CONTEXT.md), and the reasoning behind this
+shape is recorded in [docs/adr/](docs/adr/).
+
+Run the tests with:
+
+```sh
+python run_tests.py            # everything
+python run_tests.py mail       # only files whose name contains "mail"
+```
+
+No test framework is required. A flow is tested through its interface with a
+fake store — no radio, no database. [docs/bugs-fixed.md](docs/bugs-fixed.md)
+records the bugs this refactor surfaced and which test guards each one.
+
 ## Thanks
 
 **Meshtastic:**
